@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:orientation="horizontal"
+    android:gravity="left"
+    android:padding="5dp">
+
+    <com.example.he.material.UI.RoundImageView
+        android:id="@+id/address_picture"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/imageshape"
+        android:scaleType="centerCrop"
+        app:type="round" />
+
+    <TextView
+
+        android:id="@+id/address_name"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/address_picture"
+        android:gravity="center_vertical|left"
+        android:textSize="15sp"
+        android:textColor="#000000"
+        tools:text="sdhalsjdhajsdhaks"
+
+        />
+
+    <ImageView
+        android:id="@+id/more"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/dian" />
+
+</RelativeLayout>

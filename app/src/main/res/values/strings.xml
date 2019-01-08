@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Material</string>
+    <string name="drawer_layout_open">open</string>
+    <string name="drawer_layout_close">close</string>
+    <string name="uesrname">年纪轻轻就</string>
+    <string name="local">本地音乐</string>
+    <string name="internet">在线音乐</string>
+    <string name="favourite">我喜欢的</string>
+    <string name="search">搜索</string>
+    <string name="cancel">取消</string>
+    <string name="str_clear">清除</string>
+    str_clear
+</resources>
