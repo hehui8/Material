@@ -56,7 +56,7 @@
             <LinearLayout
                 android:id="@+id/ly_tab_bar"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="45dp"
                 android:orientation="horizontal"
             >
 
@@ -67,9 +67,10 @@
                 android:layout_weight="1"
                 android:drawablePadding="3dp"
                 android:gravity="center"
-                android:padding="5dp"
-                android:text="本地音乐 "
-                android:textSize="16sp" />
+                android:paddingTop="5dp"
+                android:text="@string/local"
+                android:drawableTop="@drawable/ic_local_default"
+                android:textSize="8sp" />
 
             <TextView
                 android:id="@+id/txt_2"
@@ -78,9 +79,10 @@
                 android:layout_weight="1"
                 android:drawablePadding="3dp"
                 android:gravity="center"
-                android:padding="5dp"
-                android:text="在线音乐"
-                android:textSize="16sp" />
+                android:paddingTop="5dp"
+                android:drawableTop="@drawable/ic_internet"
+                android:text="@string/internet"
+                android:textSize="8sp" />
 
             <TextView
                 android:id="@+id/txt_3"
@@ -89,29 +91,14 @@
                 android:layout_weight="1"
                 android:drawablePadding="3dp"
                 android:gravity="center"
-                android:padding="5dp"
-                android:text="待定"
-                android:textSize="16sp" />
+                android:paddingTop="5dp"
+                android:drawableTop="@drawable/user_default"
+                android:text="@string/favourite"
+                android:textSize="8sp" />
 
-            <TextView
-                android:id="@+id/txt_4"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:drawablePadding="3dp"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="待定"
-                android:textSize="16sp" />
 
         </LinearLayout>
-            <ImageView
-            android:id="@+id/img_cursor"
-            android:layout_width="fill_parent"
-            android:layout_height="7dp"
 
-            android:scaleType="matrix"
-            android:src="@mipmap/line" />
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

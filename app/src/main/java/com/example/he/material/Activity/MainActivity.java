@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tab1;
     private TextView tab2;
     private TextView tab3;
-    private TextView tab4;
     private TextView mTextview;
     private TextView mToolbar_title;
     private ImageView mImageView_search;
@@ -81,13 +80,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private User user = null;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private ViewPager viewPager;//viewpager 对象
-    private ImageView mImageView;
     private int offset = 0;//移动条图片的偏移量
     private int currIndex = 0;//当前页面的编号
     private int bmpWidth;// 移动条图片的长度
     private int one = 0; //移动条滑动一页的距离
     private int two = 0; //滑动条移动两页的距离
-    private int three = 0;
     private static int FLAG = 0; //登陆状态，默认为0（未登录）
     private static String str_request_cloudmusic;//该变量接受api接口返回的json字符串
     private Root root;
@@ -368,27 +365,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         transaction.commit();
     }
-
-    //底部导航动画效果所需要的数据
-//    public void InitViewAnimation() {
-//        mImageView = (ImageView) findViewById(R.id.img_cursor);
-//        //下划线动画的相关设置：
-//        bmpWidth = BitmapFactory.decodeResource(getResources(), R.mipmap.line).getWidth();// 获取图片宽度
-//        DisplayMetrics dm = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(dm);
-//        int screenW = dm.widthPixels;// 获取分辨率宽度
-//        offset = (screenW / 4 - bmpWidth) / 2;// 计算偏移量
-//        Matrix matrix = new Matrix();
-//        matrix.postTranslate(offset, 0);
-//        mImageView.setImageMatrix(matrix);// 设置动画初始位置
-//        //移动的距离
-//        one = offset * 2 + bmpWidth;// 移动一页的偏移量,比如1->2,或者2->3
-//        two = one * 2;// 移动两页的偏移量,比如1直接跳3
-//        three = one * 3;
-//
-//        viewPager.addOnPageChangeListener(this);
-//    }
-
     /**
      * @param json_str json 字符串
      */
