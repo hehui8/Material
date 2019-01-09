@@ -44,10 +44,12 @@
             <ImageView
                 android:id="@+id/search_clear"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
                 android:paddingStart="8dp"
                 android:paddingLeft="8dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:paddingEnd="8dp"
                 android:paddingRight="8dp"
                 android:src="@drawable/ic_search_clear"
@@ -73,11 +75,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+       <!-- <LinearLayout
             android:id="@+id/layout_recent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp">
 
             <TextView
@@ -105,14 +107,14 @@
                 android:textColor="#CCCCCC"
                 android:textSize="14sp"/>
 
+        </LinearLayout>-->
+
+       <LinearLayout
+           android:id="@+id/search_result_container"
+           android:layout_height="wrap_content"
+           android:layout_width="match_parent"
+           android:orientation="vertical">
+
         </LinearLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/search_data"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
-
-    </LinearLayout>
+</LinearLayout>
 </LinearLayout>

@@ -78,7 +78,7 @@ public class SearchRecentAdapter extends RecyclerView.Adapter<SearchRecentAdapte
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return 10;
     }
 
 
