@@ -15,10 +15,12 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/mytoolbar"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:background="#f5f2f2"
-            app:navigationIcon="@mipmap/user"
+            android:layout_height="wrap_content"
+            android:background="#ef0814"
+            app:navigationIcon="@drawable/ic_menu"
             app:layout_scrollFlags="scroll|enterAlways|snap"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="true"
             >
             <TextView
                 android:id="@+id/toolbar_title"
@@ -29,12 +31,13 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:textColor="#ffffff"
                 />
                 <ImageView
                     android:id="@+id/search"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@mipmap/search"
+                    android:src="@drawable/ic_title_search"
                     android:layout_gravity="right"
                     android:layout_marginRight="20dp"/>
 
@@ -69,8 +72,9 @@
                 android:gravity="center"
                 android:paddingTop="5dp"
                 android:text="@string/local"
-                android:drawableTop="@drawable/ic_local_default"
-                android:textSize="8sp" />
+                android:drawableTop="@drawable/ic_music_select"
+                android:textSize="8sp"
+                android:textColor="@color/tab_icon_select"/>
 
             <TextView
                 android:id="@+id/txt_2"
@@ -80,7 +84,7 @@
                 android:drawablePadding="3dp"
                 android:gravity="center"
                 android:paddingTop="5dp"
-                android:drawableTop="@drawable/ic_internet"
+                android:drawableTop="@drawable/ic_in_default"
                 android:text="@string/internet"
                 android:textSize="8sp" />
 

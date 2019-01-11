@@ -3,8 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="button">#FFFC0A16</color>
+    <color name="button">#dc0f19</color>
     <color name ="tab_select">#000000</color>
     <color name ="tab_default">#999999</color>
-
+    <color name ="tab_icon_select">#FFDA0A14</color>
+    <color name ="tab_icon_default">#999999</color>
 </resources>

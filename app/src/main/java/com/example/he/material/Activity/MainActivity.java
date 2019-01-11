@@ -2,13 +2,11 @@ package com.example.he.material.Activity;
 
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,15 +18,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
+import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +41,6 @@ import com.example.he.material.Controler.Utils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -80,11 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private User user = null;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private ViewPager viewPager;//viewpager 对象
-    private int offset = 0;//移动条图片的偏移量
-    private int currIndex = 0;//当前页面的编号
-    private int bmpWidth;// 移动条图片的长度
-    private int one = 0; //移动条滑动一页的距离
-    private int two = 0; //滑动条移动两页的距离
     private static int FLAG = 0; //登陆状态，默认为0（未登录）
     private static String str_request_cloudmusic;//该变量接受api接口返回的json字符串
     private Root root;
@@ -96,8 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
         mytoolbar = findViewById(R.id.mytoolbar);
         initData();
         bindView();
@@ -152,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         circleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (FLAG == 0) {
                     Intent intent1 = new Intent(MainActivity.this, LoginActivity.class);
                     startActivityForResult(intent1, 100);
@@ -279,14 +270,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawerLayout = findViewById(R.id.internet_layout);
         viewPager = findViewById(R.id.viewpage);
 
-        Drawable drawable = getDrawable(R.drawable.ic_loacl_select);
-        if (drawable != null) {
-            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
-            tab1.setCompoundDrawables(null, drawable, null, null);
-            tab1.setTextColor(getResources().getColor(R.color.tab_select));
-        }
-
-
     }
 
     /**
@@ -334,13 +317,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.txt_1:
                 mToolbar_title.setText(R.string.local);
-                select_img(v);
+                selectImg(v);
                 viewPager.setCurrentItem(0, true);
                 break;
             case R.id.txt_2:
                 mToolbar_title.setText(R.string.internet);
                 if (FLAG == 1) {
-                    select_img(v);
+                    selectImg(v);
                     viewPager.setCurrentItem(1, true);
                 } else {
                     Toast.makeText(MainActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
@@ -348,10 +331,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.txt_3:
                 mToolbar_title.setText(R.string.favourite);
-                select_img(v);
+                selectImg(v);
                 viewPager.setCurrentItem(2, true);
             case R.id.search:
-                if (FLAG == 1) {
+                if (/*FLAG == 1*/true) {
                   /*  Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                     intent.putExtra("Internet_data", (Serializable) music_internet_list);*/
                   Intent intent =new Intent(MainActivity.this,NewRecentSearchActivity.class);
@@ -441,64 +424,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void select_img(View v) {
+    public void selectImg(View v) {
         if (v != null) {
             if (v.getId() == R.id.txt_1) {
-                Drawable drawable = getDrawable(R.drawable.ic_loacl_select);
+                Drawable drawable = getDrawable(R.drawable.ic_music_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab1.setCompoundDrawables(null, drawable, null, null);
-                    tab1.setTextColor(getResources().getColor(R.color.tab_select));
+                    tab1.setTextColor(getResources().getColor(R.color.tab_icon_select));
                 }
-                drawable = getDrawable(R.drawable.ic_internet);
+                drawable = getDrawable(R.drawable.ic_in_default);
                 if (drawable != null && tab2 != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab2.setCompoundDrawables(null, drawable, null, null);
-                    tab2.setTextColor(getResources().getColor(R.color.tab_default));
+                    tab2.setTextColor(getResources().getColor(R.color.tab_icon_default));
 
                 }
                 drawable = getDrawable(R.drawable.user_default);
                 if (drawable != null && tab3 != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab3.setCompoundDrawables(null, drawable, null, null);
-                    tab3.setTextColor(getResources().getColor(R.color.tab_default));
+                    tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
 
             }else if(v.getId() == R.id.txt_2){
-                Drawable drawable = getDrawable(R.drawable.ic_internet_select);
+                Drawable drawable = getDrawable(R.drawable.ic_in_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab2.setCompoundDrawables(null, drawable, null, null);
-                    tab2.setTextColor(getResources().getColor(R.color.tab_select));
+                    tab2.setTextColor(getResources().getColor(R.color.tab_icon_select));
                 }
-                drawable = getDrawable(R.drawable.ic_loacl_dafault);
+                drawable = getDrawable(R.drawable.ic_music_default);
                 if (drawable != null && tab2 != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab1.setCompoundDrawables(null, drawable, null, null);
-                    tab1.setTextColor(getResources().getColor(R.color.tab_default));
+                    tab1.setTextColor(getResources().getColor(R.color.tab_icon_default));
 
                 }
                 drawable = getDrawable(R.drawable.user_default);
                 if (drawable != null && tab3 != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab3.setCompoundDrawables(null, drawable, null, null);
-                    tab3.setTextColor(getResources().getColor(R.color.tab_default));
+                    tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
             }else {
                 Drawable drawable = getDrawable(R.drawable.user_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab3.setCompoundDrawables(null, drawable, null, null);
-                    tab3.setTextColor(getResources().getColor(R.color.tab_select));
+                    tab3.setTextColor(getResources().getColor(R.color.tab_icon_select));
                 }
-                drawable = getDrawable(R.drawable.ic_loacl_dafault);
+                drawable = getDrawable(R.drawable.ic_in_default);
                 if (drawable != null && tab2 != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab2.setCompoundDrawables(null, drawable, null, null);
-                    tab2.setTextColor(getResources().getColor(R.color.tab_default));
+                    tab2.setTextColor(getResources().getColor(R.color.tab_icon_default));
 
                 }
-                drawable = getDrawable(R.drawable.ic_loacl_dafault);
+                drawable = getDrawable(R.drawable.ic_music_default);
                 if (drawable != null && tab1 != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab1.setCompoundDrawables(null, drawable, null, null);

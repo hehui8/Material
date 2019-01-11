@@ -120,8 +120,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(LoginActivity.this,"网络异常，请检查网络",Toast.LENGTH_SHORT).show();
             }
-
             return user;
         }
         /*

@@ -87,16 +87,9 @@ public class SearchRecentFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        recentSearch =DataUtils.getData();
 
-        String searchName = getNewRecentSearchActivity().getSearchText().getText().toString();
-        if (searchName != null) {
-            putData(searchName);
-            recentSearch = DataUtils.getData();
-            if (recentSearch != null) {
-                Collections.reverse(recentSearch);
-            }
-        }
-        if (recentSearch != null) {
+        if (adapter == null) {
             adapter = new SearchRecentAdapter(recentSearch, new SearchRecentAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
@@ -104,14 +97,11 @@ public class SearchRecentFragment extends Fragment {
                         getNewRecentSearchActivity().getSearchText().setText(recentSearch.get(position));
                     }
                 }
-
                 @Override
                 public void onLongClick(int position) {
-
                 }
             });
         }
-
         recyclerView.setAdapter(adapter);
         updateList();
     }

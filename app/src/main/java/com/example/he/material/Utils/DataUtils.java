@@ -26,8 +26,8 @@ public class DataUtils {
      */
     public static void putData(String searchkey) {
         String mMatchString;
+        Collections.reverse(recentDataList);
         if (recentDataList != null && searchkey != null) {
-
             for (int i = 0; i < recentDataList.size(); i++) {
                 mMatchString = recentDataList.get(i);
                 if (mMatchString.equals(searchkey)) {
@@ -40,13 +40,14 @@ public class DataUtils {
                 recentDataList.remove(0);
                 recentDataList.add(searchkey);
             }
-            Collections.reverse(recentDataList);
         }
+        Collections.reverse(recentDataList);
     }
 
     public static List<String> getData() {
 
         if (recentDataList != null) {
+            Collections.reverse(recentDataList);
             return recentDataList;
         }
         return null;

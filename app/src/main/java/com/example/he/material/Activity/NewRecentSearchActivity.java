@@ -59,9 +59,11 @@ public class NewRecentSearchActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_new);
-        searchInitView();
+
 
         mFocusView = findViewById(R.id.focus_view);
+        searchInitView();
+        showRecentFragment();
         mSearchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -103,15 +105,13 @@ public class NewRecentSearchActivity extends AppCompatActivity {
             }
         });
 
-        mCancelText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     mFocusView.requestFocus();
                     hideKeyboard(mCancelText);
-
                     String name = mSearchText.getText().toString();
-
                     putData(name);
                     mRecentFragment.updateList();
                     return true;
@@ -125,11 +125,11 @@ public class NewRecentSearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 search();
-
+                mFocusView.requestFocus();
             }
         });
 
-        showRecentFragment();
+
     }
 
 
@@ -150,7 +150,6 @@ public class NewRecentSearchActivity extends AppCompatActivity {
             } else{
                 putData(name);
                 mRecentFragment.updateList();
-                mSearchText.setText("");
                 hideKeyboard(mCancelText);
                 mSearchText.clearFocus();
                 mClearText.setVisibility(View.INVISIBLE);
@@ -198,5 +197,12 @@ public class NewRecentSearchActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(fragmentStacks!=null) {
+            fragmentStacks.clear();
+            fragmentStacks=null;
+        }
+    }
 }
