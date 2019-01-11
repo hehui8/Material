@@ -18,14 +18,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <TextView
+            <EditText
                 android:id="@+id/search_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
                 android:background="@drawable/normal_search_bg"
-                android:drawableStart="@drawable/ic_search_tv"
+                android:drawableStart="@drawable/ic_tilte_search"
                 android:drawablePadding="4dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical|left|start"
@@ -33,9 +32,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:paddingStart="8dp"
-                android:paddingLeft="8dp"
                 android:paddingEnd="28dp"
-                android:paddingRight="28dp"
                 android:textColor="#333333"
                 android:textColorHint="@color/tab_default"
                 android:textSize="16sp"
@@ -49,9 +46,9 @@
                 android:paddingStart="8dp"
                 android:paddingLeft="8dp"
                 android:paddingTop="10dp"
-                android:paddingBottom="10dp"
                 android:paddingEnd="8dp"
                 android:paddingRight="8dp"
+                android:paddingBottom="10dp"
                 android:src="@drawable/ic_search_clear"
                 android:visibility="gone" />
         </FrameLayout>
@@ -70,51 +67,58 @@
             android:textSize="16sp" />
     </LinearLayout>
 
+    <!--  <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical">
+        <LinearLayout
+              android:id="@+id/layout_recent"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="5dp"
+              android:layout_marginBottom="10dp">
+
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp"
+                  android:text="最近搜索"
+                  android:textColor="@color/tab_select"
+                  android:textSize="15sp"/>
+
+              <android.support.v4.widget.Space
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"/>
+
+              <TextView
+                  android:id="@+id/search_clean"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:drawableStart="@drawable/ic_clean"
+                  android:drawablePadding="3dp"
+                  android:layout_marginRight="5dp"
+                  android:gravity="center"
+                  android:text="@string/str_clear"
+                  android:textColor="#CCCCCC"
+                  android:textSize="14sp"/>
+
+          </LinearLayout>-->
+
+    <View
+        android:id="@+id/focus_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+
     <LinearLayout
+        android:id="@+id/search_result_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-       <!-- <LinearLayout
-            android:id="@+id/layout_recent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp">
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="最近搜索"
-                android:textColor="@color/tab_select"
-                android:textSize="15sp"/>
-
-            <android.support.v4.widget.Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/search_clean"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_clean"
-                android:drawablePadding="3dp"
-                android:layout_marginRight="5dp"
-                android:gravity="center"
-                android:text="@string/str_clear"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"/>
-
-        </LinearLayout>-->
-
-       <LinearLayout
-           android:id="@+id/search_result_container"
-           android:layout_height="wrap_content"
-           android:layout_width="match_parent"
-           android:orientation="vertical">
-
-        </LinearLayout>
-</LinearLayout>
 </LinearLayout>

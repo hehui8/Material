@@ -13,7 +13,6 @@
         android:drawablePadding="10dp"
         android:drawableStart="@drawable/ic_search"
         android:textSize="20sp"
-        android:textColor="@color/tab_default"
-        android:text="我"/>
+        android:textColor="@color/tab_default" />
 
 </LinearLayout>

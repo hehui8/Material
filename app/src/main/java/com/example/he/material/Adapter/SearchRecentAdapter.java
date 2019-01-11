@@ -55,16 +55,14 @@ public class SearchRecentAdapter extends RecyclerView.Adapter<SearchRecentAdapte
 
     @Override
     public void onBindViewHolder(@NonNull SearchRecentHolder holder, final int position) {
-        if(mData!=null){
+        if(mData!=null && mData.size()>0){
             String data =mData.get(position);
             if( holder!=null){
-                SearchRecentHolder mHolder= (SearchRecentHolder)holder;
                 if(data!=null){
-                    mHolder.textView.setText(data);
+                    holder.textView.setText(data);
                 }
-
                 if(mOnItemClickListener!=null){
-                    mHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                   holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             mOnItemClickListener.onClick(position);
@@ -78,7 +76,7 @@ public class SearchRecentAdapter extends RecyclerView.Adapter<SearchRecentAdapte
 
     @Override
     public int getItemCount() {
-        return 10;
+        return mData.size();
     }
 
 

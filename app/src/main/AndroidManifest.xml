@@ -23,6 +23,9 @@
         <activity android:name=".Activity.SearchActivity">
 
         </activity>
+        <activity android:name=".Activity.NewRecentSearchActivity">
+
+        </activity>
         <activity android:name=".Activity.MusicActivity">
 
         </activity>

@@ -352,8 +352,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 viewPager.setCurrentItem(2, true);
             case R.id.search:
                 if (FLAG == 1) {
-                    Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                    intent.putExtra("Internet_data", (Serializable) music_internet_list);
+                  /*  Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                    intent.putExtra("Internet_data", (Serializable) music_internet_list);*/
+                  Intent intent =new Intent(MainActivity.this,NewRecentSearchActivity.class);
+
                     startActivity(intent);
                 } else {
 
@@ -416,6 +418,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        exit();
     }
 
     private void exit() {
