@@ -18,10 +18,12 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/mytoolbar_music"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:background="#efebeb"
             android:gravity="center"
-            app:navigationIcon="@mipmap/back">
+            app:navigationIcon="@mipmap/back"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="true">
 
             <TextView
                 android:id="@+id/music_title"
@@ -51,14 +53,14 @@
             android:layout_height="220dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/a_1"
+                android:id="@+id/pricture_img"
                 android:layout_width="220dp"
                 android:layout_height="220dp"
                 android:src="@drawable/xigua"
                 app:civ_border_width="20dp" />
 
             <TextView
-                android:id="@+id/a_2"
+                android:id="@+id/geci_text"
                 android:layout_width="220dp"
                 android:layout_height="220dp"
                 android:src="@drawable/xigua"
@@ -84,8 +86,10 @@
         <TextView
             android:id="@+id/tv_progress"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:gravity="center">
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:gravity="center"
+            >
 
         </TextView>
 
@@ -93,10 +97,6 @@
             android:id="@+id/sb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="-20dp"
-            android:layout_marginEnd="-20dp"
-            android:paddingStart="28dp"
-            android:paddingEnd="28dp"
             android:background="@android:color/transparent"
             android:gravity="center"
             android:layout_weight="1"
@@ -109,7 +109,9 @@
         <TextView
             android:id="@+id/tv_total"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
+            android:paddingLeft="3dp"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
             android:gravity="center">
 
         </TextView>
@@ -120,14 +122,15 @@
         android:layout_height="60dp"
         android:gravity="center">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/back"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginRight="40dp"
-            android:background="@drawable/ic_prev" />
+            android:layout_width="30dp"
+            android:layout_height="30dp"
 
-        <ImageButton
+            android:layout_marginRight="40dp"
+            android:background="@drawable/ic_prew" />
+
+        <ImageView
             android:id="@+id/play"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -137,9 +140,8 @@
 
         <ImageView
             android:id="@+id/next"
-            android:layout_width="50dp"
-
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/ic_next" />
 
     </LinearLayout>

@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -13,46 +14,38 @@ import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.example.he.material.MODLE.GEDAN.Songs;
 import com.example.he.material.MODLE.Music;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
 import com.example.he.material.Controler.Utils;
-
 import java.io.Serializable;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-import okhttp3.internal.Util;
 
 public class MusicActivity extends AppCompatActivity {
 
     private boolean isplaying = true;//播放标志
     public static String TAG = "MUSIC";
-    private ImageButton mBack;
-    private ImageButton mplay;
-    private ImageButton mnext;
+    private ImageView mBack;
+    private ImageView mplay;
+    private ImageView mnext;
     private static SeekBar mSeekBar;
     private static TextView tv_progress;
     private static TextView tv_total;
     private static TextView music_title;
     private CircleImageView mCircleImageView;
-    private TextView mTextView;
+    private TextView mPricture;
     private static MyService mService;
-    private LinearLayout music_main;
-
-
     private Intent mIntent;
     private ServiceConnection mConn;
     private int mProgress;
@@ -60,13 +53,7 @@ public class MusicActivity extends AppCompatActivity {
     private ObjectAnimator animator;
     private ViewPager mViewPager;
     //music对象属性
-    private int id;
-    private String name;
-    private String imagepath;
-    private int imageId;
-    private String path;
-    private String singer;
-    private int size;
+
     private List<Music> mMusics_Local;
     private List<Songs> mMusics_Internet;
     private int click_item;
@@ -78,17 +65,21 @@ public class MusicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplay);
-        music_main = (LinearLayout) findViewById((R.id.music_main));
-        music_title = (TextView) findViewById(R.id.music_title);
-        mToolbar = (Toolbar) findViewById(R.id.mytoolbar_music);
-        mBack = (ImageButton) findViewById(R.id.back);
-        mplay = (ImageButton) findViewById(R.id.play);
-        mnext = (ImageButton) findViewById(R.id.next);
-        mSeekBar = (SeekBar) findViewById(R.id.sb);
-        tv_progress = (TextView) findViewById(R.id.tv_progress);
-        tv_total = (TextView) findViewById(R.id.tv_total);
-        mCircleImageView = (CircleImageView) findViewById(R.id.a_1);
-        mTextView = (TextView) findViewById(R.id.a_2);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+        music_title =  findViewById(R.id.music_title);
+        mToolbar = findViewById(R.id.mytoolbar_music);
+        mBack =  findViewById(R.id.back);
+        mplay = findViewById(R.id.play);
+        mnext = findViewById(R.id.next);
+        mSeekBar =  findViewById(R.id.sb);
+        tv_progress =  findViewById(R.id.tv_progress);
+        tv_total = findViewById(R.id.tv_total);
+        mCircleImageView = findViewById(R.id.pricture_img);
+        mPricture = findViewById(R.id.geci_text);
 
 
         //接受从fragment传送过来的bundle（点击的位置）和music集合
@@ -99,32 +90,32 @@ public class MusicActivity extends AppCompatActivity {
             State_from = 0;
             Bundle mbundle = intent_data.getBundleExtra("data");
             click_item = mbundle.getInt("itemId");//点击的位置编号
-            Log.i(TAG, "点击的位置编号lcoal" + click_item);
+
             position_current = click_item;//当前播放位置等于点击位置
             mMusics_Local = (List<Music>) getIntent().getSerializableExtra("music");
-            Log.i(TAG, "positionlocal" + click_item);
+
             //将数据传给service
             mIntent.putExtra("from", "Local");
             mIntent.putExtra("position", click_item);
             mIntent.putExtra("music", (Serializable) mMusics_Local);
             startService(mIntent);
             music_title.setText(mMusics_Local.get(position_current).getName());
-            mCircleImageView.setImageBitmap(Utils.getArtAlbum(this, mMusics_Local.get(position_current).getImageId()));
+            Glide.with(this).load(getResources().getDrawable(R.drawable.default_img)).into(mCircleImageView);
+        /*    mCircleImageView.setImageBitmap(Utils.getArtAlbum(this, mMusics_Local.get(position_current).getImageId()));*/
         } else{
             State_from = 1;
             Bundle mbundle = intent_data.getBundleExtra("data");
             click_item = mbundle.getInt("itemId");//点击的位置编号
-            Log.i(TAG, "点击的位置编号internet" + click_item);
+
             position_current = click_item;//当前播放位置等于点击位置
             mMusics_Internet = (List<Songs>) getIntent().getSerializableExtra("song");
-            Log.i(TAG, "positioninternet" + click_item);
+
             //将数据传给service
             mIntent.putExtra("from", "Internet");
             mIntent.putExtra("position", click_item);
             mIntent.putExtra("song", (Serializable) mMusics_Internet);
             startService(mIntent);
             music_title.setText(mMusics_Internet.get(position_current).getTitle());
-            System.out.print(mMusics_Internet.get(position_current).getTitle() + mMusics_Internet.get(position_current).getUrl());
             if (mCircleImageView != null) {
                 Glide.with(this).load(mMusics_Internet.get(position_current).getPic()).into(mCircleImageView);
             }
@@ -143,7 +134,6 @@ public class MusicActivity extends AppCompatActivity {
                 mService = binder.getService();
                 //可以通过mService调用service中方法
             }
-
             @Override
             public void onServiceDisconnected(ComponentName name) {
             }
@@ -156,7 +146,7 @@ public class MusicActivity extends AppCompatActivity {
 
         //当从主activity切换至musicactivity时，歌曲自动开始播放，动画开始
         animator.start();
-        mplay.setBackground(getResources().getDrawable(R.drawable.pause));
+        mplay.setBackground(getResources().getDrawable(R.drawable.ic_stop));
 
 
         //为播放键设置点击监听事件
@@ -184,15 +174,15 @@ public class MusicActivity extends AppCompatActivity {
         mCircleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCircleImageView.setVisibility(View.INVISIBLE);
-                mTextView.setVisibility(View.VISIBLE);
+               /* mCircleImageView.setVisibility(View.INVISIBLE);
+                mPricture.setVisibility(View.VISIBLE);*/
             }
         });
 
-        mTextView.setOnClickListener(new View.OnClickListener() {
+        mPricture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTextView.setVisibility(View.INVISIBLE);
+                mPricture.setVisibility(View.INVISIBLE);
                 mCircleImageView.setVisibility(View.VISIBLE);
             }
         });
