@@ -35,4 +35,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'org.kie.modules:com-google-code-gson:6.5.0.Final'
     implementation 'com.mpatric:mp3agic:0.9.1'
+    implementation 'com.alibaba.android:ultraviewpager:1.0.7.8'
 }

@@ -13,4 +13,16 @@
         <item name="windowNoTitle">true</item>>
 
     </style>>
+
+
+    <style name="Theme.AppLauncher" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@drawable/start_background</item>
+    </style>
+
+    <style name="imageview_mall_line_long">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2px</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:src">#e0e0e0</item>
+    </style>
 </resources>

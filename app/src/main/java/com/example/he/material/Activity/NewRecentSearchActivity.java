@@ -76,10 +76,13 @@ public class NewRecentSearchActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mCancelText.setText("搜索");
+
+
                 if (TextUtils.isEmpty(editable)) {
+                    mCancelText.setText("取消");
                     mClearText.setVisibility(View.INVISIBLE);
                 } else if (mSearchText.hasFocus()) {
+                    mCancelText.setText("搜索");
                     mClearText.setVisibility(View.VISIBLE);
                 }
             }
@@ -124,8 +127,13 @@ public class NewRecentSearchActivity extends AppCompatActivity {
         mCancelText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                search();
-                mFocusView.requestFocus();
+                if(mCancelText.getText().toString().equals("搜索")){
+                    search();
+                    mFocusView.requestFocus();
+                }
+                if(mCancelText.getText().toString().equals("取消")){
+                    finish();
+                }
             }
         });
 

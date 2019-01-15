@@ -95,6 +95,7 @@ public class SearchRecentFragment extends Fragment {
                 public void onClick(int position) {
                     if (position > 0) {
                         getNewRecentSearchActivity().getSearchText().setText(recentSearch.get(position));
+
                     }
                 }
                 @Override
@@ -139,4 +140,6 @@ public class SearchRecentFragment extends Fragment {
         }
     }
 
+
+    public void searchRequest(){}
 }
