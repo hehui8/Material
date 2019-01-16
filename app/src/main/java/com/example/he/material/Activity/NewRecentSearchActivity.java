@@ -1,5 +1,6 @@
 package com.example.he.material.Activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -7,12 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.Utils.DataUtils;
 
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,9 +28,21 @@ import com.example.he.material.Adapter.SearchRecentAdapter;
 import com.example.he.material.Fragment_List.SearchRecentFragment;
 import com.example.he.material.Fragment_List.SearchResultFragment;
 import com.example.he.material.R;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static com.example.he.material.Utils.DataUtils.hideKeyboard;
 import static com.example.he.material.Utils.DataUtils.hideSoftKeyboard;
@@ -41,25 +57,28 @@ import static com.example.he.material.Utils.DataUtils.putData;
  * note : 说明
  */
 public class NewRecentSearchActivity extends AppCompatActivity {
-    private RecyclerView mRecyclerview;
     private EditText mSearchText;
     private TextView mCancelText;
-    private TextView mCleanText;
     private ImageView mClearText;
-    private SearchRecentAdapter mAdapter;
+
     private LinearLayout mLinearlayout;
     private List<String> fragmentStacks;
 
     private SearchResultFragment mResultFragment;
     private SearchRecentFragment mRecentFragment;
     private View mFocusView;
+    private ArrayList<Song> list = new ArrayList<>();
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_new);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        }
+        setContentView(R.layout.activity_search_new);
 
         mFocusView = findViewById(R.id.focus_view);
         searchInitView();
@@ -91,6 +110,7 @@ public class NewRecentSearchActivity extends AppCompatActivity {
         mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+
                 if (mSearchText != null) {
                     if (!mSearchText.hasFocus()) {
                         mClearText.setVisibility(View.GONE);
@@ -127,19 +147,17 @@ public class NewRecentSearchActivity extends AppCompatActivity {
         mCancelText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mCancelText.getText().toString().equals("搜索")){
+                if (mCancelText.getText().toString().equals("搜索")) {
                     search();
                     mFocusView.requestFocus();
+                    showSearchFragment();
                 }
-                if(mCancelText.getText().toString().equals("取消")){
+                if (mCancelText.getText().toString().equals("取消")) {
                     finish();
                 }
             }
         });
-
-
     }
-
 
     private void searchInitView() {
         mClearText = findViewById(R.id.search_clear);
@@ -155,9 +173,9 @@ public class NewRecentSearchActivity extends AppCompatActivity {
             String name = mSearchText.getText().toString();
             if (name.equals("")) {
                 Toast.makeText(NewRecentSearchActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
-            } else{
+            } else {
+                requestForSearch(name);
                 putData(name);
-                mRecentFragment.updateList();
                 hideKeyboard(mCancelText);
                 mSearchText.clearFocus();
                 mClearText.setVisibility(View.INVISIBLE);
@@ -167,18 +185,6 @@ public class NewRecentSearchActivity extends AppCompatActivity {
 
     public EditText getSearchText() {
         return mSearchText;
-    }
-
-    public TextView getCleanText() {
-        return mCleanText;
-    }
-
-    public TextView getmCancelText() {
-        return mCancelText;
-    }
-
-    public ImageView getmClearText() {
-        return mClearText;
     }
 
     public void showRecentFragment() {
@@ -205,12 +211,117 @@ public class NewRecentSearchActivity extends AppCompatActivity {
         }
     }
 
+    public void showSearchFragment() {
+
+        if (fragmentStacks != null) {
+            String fragmentName = SearchResultFragment.class.getSimpleName();
+            fragmentStacks.remove(fragmentName);
+            fragmentStacks.add(fragmentName);
+        }
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if (mRecentFragment != null) {
+            fragmentTransaction.hide(mRecentFragment);
+        }
+        if (mResultFragment == null) {
+            mResultFragment = SearchResultFragment.newInstance();
+        } else {
+            mResultFragment.onVisible();
+        }
+        if (mResultFragment.isAdded()) {
+            fragmentTransaction.show(mResultFragment).commit();
+        } else {
+            fragmentTransaction.add(R.id.search_result_container, mResultFragment).commit();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(fragmentStacks!=null) {
+        if (fragmentStacks != null) {
             fragmentStacks.clear();
-            fragmentStacks=null;
+            fragmentStacks = null;
+        }
+    }
+
+    public ArrayList<Song> getList() {
+        return list;
+    }
+
+    public void requestForSearch(String string) {
+        MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+        String url = "http://192.168.55.15:8080/TestMusic/SearchServlet";
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(mediaType, string))
+                .build();
+
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "稍后再试", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String getSearch = response.body().string();
+                Log.d("SEACH", getSearch);
+                Gson json = new GsonBuilder().create();
+                try {
+                    List<Song> tempList = json.fromJson(getSearch, new TypeToken<ArrayList<Song>>() {
+                    }.getType());
+                    list.clear();
+                    list.addAll(tempList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!list.isEmpty()) {
+                            mResultFragment.updateList();
+                        } else {
+                            mResultFragment.setEmpty();
+                        }
+                    }
+                });
+
+
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        /*
+         * 回退处理，根据fragmentStack记录进行回退操作
+         */
+        //如果fragmentStacks为空或者stacks中就一个fragment，那么点击返回键直接结束当前activity
+        if (mSearchText.getText() != null) {
+            mSearchText.setText("");
+            mSearchText.requestFocus();
+        }
+        if (fragmentStacks == null || fragmentStacks.size() == 1) {
+            finish();
+        } else {
+            //返回上一个fragment，调用show（Fragment名）
+            fragmentStacks.remove(fragmentStacks.size() - 1);
+            String fragmentName = fragmentStacks.get(fragmentStacks.size() - 1);
+            if (SearchRecentFragment.class.getSimpleName().equals(fragmentName)) {
+                showRecentFragment();
+            } else if (SearchResultFragment.class.getSimpleName().equals(fragmentName)) {
+                showSearchFragment();
+            } else {
+                finish();
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.example.he.material.Adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,11 +26,12 @@ import java.util.List;
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.SearchResultHolder> {
     private Context mContext;
     private SearchRecentAdapter.OnItemClickListener mOnItemClickListener;
-    private List<Song> mData;
+    private ArrayList<Song> mData;
 
-    public SearchResultAdapter(List<Song> mData, Context context) {
-        this.mData = mData;
-        this.mContext = context;
+
+    public SearchResultAdapter(ArrayList<Song> searchresult, SearchRecentAdapter.OnItemClickListener listener) {
+        this.mOnItemClickListener = listener;
+        this.mData = searchresult;
     }
 
     class SearchResultHolder extends RecyclerView.ViewHolder {
@@ -36,7 +39,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         TextView textViewId;
         TextView textViewTitle;
 
-        public SearchResultHolder(View itemView) {
+        SearchResultHolder(View itemView) {
             super(itemView);
             textViewId = itemView.findViewById(R.id.result_id);
             textViewTitle = itemView.findViewById(R.id.result_title);
@@ -51,35 +54,37 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             mContext = parent.getContext();
         }
         View view = LayoutInflater.from(mContext).inflate(R.layout.search_result_item, parent, false);
-
+        Log.d("seach", "adapter oncreatedviewholder");
         return new SearchResultHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchResultHolder holder, final int position) {
-        if (mData != null && mData.size() > 0) {
+        if (mData != null && !mData.isEmpty()) {
             String songname = mData.get(position).getSongName();
-            if (holder != null) {
-                if (songname != null) {
-                    holder.textViewTitle.setText(songname);
-                    holder.textViewId.setText(position + 1);
-                }
-
-                if(mOnItemClickListener!=null){
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mOnItemClickListener.onClick(position);
-                        }
-                    });
-                }
+            if (songname != null) {
+                holder.textViewTitle.setText(songname);
+                int temp =position;
+                temp++;
+                holder.textViewId.setText(String.valueOf(temp));
+            }
+            if (mOnItemClickListener != null) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnItemClickListener.onClick(position);
+                    }
+                });
             }
         }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        if (mData != null) {
+            return mData.size();
+        }
+        return 10;
     }
 
     public interface OnItemClickListener {

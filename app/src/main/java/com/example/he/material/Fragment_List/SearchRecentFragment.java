@@ -38,9 +38,9 @@ import static com.example.he.material.Utils.DataUtils.putData;
 public class SearchRecentFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private Context context;
+
     private List<String> recentSearch;
-    private String keyname;
+
 
     private ImageView mDelte;
     private SearchRecentAdapter adapter;
@@ -93,7 +93,7 @@ public class SearchRecentFragment extends Fragment {
             adapter = new SearchRecentAdapter(recentSearch, new SearchRecentAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
-                    if (position > 0) {
+                    if (position >=0) {
                         getNewRecentSearchActivity().getSearchText().setText(recentSearch.get(position));
 
                     }
@@ -104,7 +104,7 @@ public class SearchRecentFragment extends Fragment {
             });
         }
         recyclerView.setAdapter(adapter);
-        updateList();
+
     }
 
 
@@ -141,5 +141,4 @@ public class SearchRecentFragment extends Fragment {
     }
 
 
-    public void searchRequest(){}
 }

@@ -5,14 +5,14 @@
     android:layout_height="50dp"
     android:gravity="left"
     android:orientation="horizontal"
-    android:padding="5dp">
+    android:paddingLeft="5dp">
 
     <TextView
         android:id="@+id/result_id"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:textColor="@color/tab_select"
         android:text="11"
         android:gravity="center"
@@ -33,7 +33,14 @@
         android:layout_height="20dp"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/dian" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/line_default"/>
 
 </RelativeLayout>

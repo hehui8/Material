@@ -8,4 +8,5 @@
     <color name ="tab_default">#999999</color>
     <color name ="tab_icon_select">#FFDA0A14</color>
     <color name ="tab_icon_default">#999999</color>
+    <color name ="line_default">#EBEBEB</color>
 </resources>

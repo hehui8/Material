@@ -12,7 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.he.material.Activity.NewRecentSearchActivity;
+import com.example.he.material.Adapter.SearchRecentAdapter;
 import com.example.he.material.Adapter.SearchResultAdapter;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
@@ -20,6 +23,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -34,16 +39,14 @@ import okhttp3.Response;
 public class SearchResultFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private Context context;
-    private List<Song> searchresult;
-    private String keyname;
+    private ArrayList<Song> searchresult;
     private SearchResultAdapter adapter;
+    private  View mEmpty;
 
 
-    public static SearchResultFragment newInstance(String keyname) {
+    public static SearchResultFragment newInstance() {
         SearchResultFragment newFragment = new SearchResultFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("key", keyname);
         newFragment.setArguments(bundle);
         return newFragment;
 
@@ -54,51 +57,71 @@ public class SearchResultFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle
             savedInstanceState) {
-
-        keyname = getArguments().getString("key");
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_search_result, container, false);
-        recyclerView = view.findViewById(R.id.search_result_list);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-        initData(keyname);
-        adapter = new SearchResultAdapter(searchresult, getContext());
-        recyclerView.setAdapter(adapter);
+
         return view;
     }
 
-    public void initData(String searchname) {
-        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-        String url = "http://192.168.55.15:8080/TestMusic/LoginServlet";
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        recyclerView = view.findViewById(R.id.search_result_list);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getNewRecentSearchActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
+        mEmpty =view.findViewById(R.id.empty);
 
-        String requestBody = searchname;
-        OkHttpClient okHttpClient = new OkHttpClient();
+        super.onViewCreated(view, savedInstanceState);
+    }
 
-        final Request request = new Request.Builder()
-                .url(url)
-                .post(RequestBody.create(mediaType, requestBody))//默认就是GET请求，可以不写
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("request-login", "onFailure: ");
-                searchresult = null;
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-            }
+        searchresult=getNewRecentSearchActivity().getList();
+        if(searchresult == null){
+            searchresult =new ArrayList<>();
+        }
+        if (adapter == null) {
+            adapter = new SearchResultAdapter(searchresult, new SearchRecentAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(int position) {
+                    if (position > 0) {
+                   /*     getNewRecentSearchActivity().getSearchText().setText(searchresult.get(position));*/
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String requestSuccess = response.body().string();
-                Log.d("request-login", "onResponse: " + requestSuccess);
-                Gson gson = new Gson();
-                List<Song> list = gson.fromJson(requestSuccess, new TypeToken<List<Song>>() {
-                }.getType());
-                if (list.size() > 0 && list != null) {
-                    searchresult = list;
+                    }
                 }
-            }
-        });
+                @Override
+                public void onLongClick(int position) {
+                }
+            });
+        }
+        recyclerView.setAdapter(adapter);
+        updateList();
+    }
+
+
+    private NewRecentSearchActivity getNewRecentSearchActivity() {
+        if (getActivity() instanceof NewRecentSearchActivity) {
+            return (NewRecentSearchActivity) getActivity();
+        }
+        return null;
+    }
+
+    public void updateList() {
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    public void onVisible() {
+        updateList();
+    }
+
+
+    public void setEmpty(){
+        if(mEmpty!=null){
+            mEmpty.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.INVISIBLE);
+        }
     }
 
 }

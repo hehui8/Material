@@ -53,9 +53,9 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mUltraViewPager = view.findViewById(R.id.ultra_viewpager);
-        mUltraViewPager.setScrollMode(UltraViewPager.ScrollMode.HORIZONTAL);
-        PagerAdapter adapter = new UltraPagerAdapter(false);
+
+      /*  mUltraViewPager.setScrollMode(UltraViewPager.ScrollMode.HORIZONTAL);
+
         mUltraViewPager.setAdapter(adapter);
 
 
@@ -75,7 +75,7 @@ public class MainFragment extends Fragment {
         //设定页面循环播放
         mUltraViewPager.setInfiniteLoop(true);
         //设定页面自动切换  间隔2秒
-        mUltraViewPager.setAutoScroll(2000);
+        mUltraViewPager.setAutoScroll(2000);*/
         super.onViewCreated(view, savedInstanceState);
     }
 

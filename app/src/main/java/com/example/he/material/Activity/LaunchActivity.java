@@ -29,7 +29,7 @@ public class LaunchActivity  extends Activity {
             @Override
             public void run() {
                try{
-                   sleep(3000);
+                   sleep(2000);
                    Intent itent=new Intent(getApplicationContext(),MainActivity.class);
                    startActivity(itent);
                    finish();
