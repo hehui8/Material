@@ -33,7 +33,7 @@ public class MyService extends Service {
     private static int positon_click_local;//当前lcoal点击的选项标号
     private static int positon_click_internet;//当前internet点击的选项标号
     private boolean isplay;
-    private int State =0;
+    private int State = 0;
 
     @Override
     public void onCreate() {
@@ -45,10 +45,10 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i("intent ",intent.getStringExtra("from"));
+        Log.i("intent ", intent.getStringExtra("from"));
         //获取从MusicActivity传送过来的数据，同样需作区分
-        if(intent.getStringExtra("from").equals("Local")){
-            State= 0;
+        if (intent.getStringExtra("from").equals("Local")) {
+            State = 0;
             Local_Music_list = (List<Music>) intent.getSerializableExtra("music");
             positon_click_local = intent.getIntExtra("position", -1);
             //click_position_second ===当前播放位置
@@ -59,10 +59,9 @@ public class MyService extends Service {
             } else if (click_position_second == positon_click_local) {
                 Log.i("MUSIC", "tongyishou");
             }
-        }
-        else if(intent.getStringExtra("from").equals("Internet")){
-            State=1;
-            Internet_Music_list=(List<Songs>) intent.getSerializableExtra("song");
+        } else if (intent.getStringExtra("from").equals("Internet")) {
+            State = 1;
+            Internet_Music_list = (List<Songs>) intent.getSerializableExtra("song");
             positon_click_internet = intent.getIntExtra("position", -1);
 
             if ((click_position_second == -1) || (click_position_second != positon_click_internet)) {
@@ -78,7 +77,7 @@ public class MyService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-               next();
+                next();
             }
         });
         return super.onStartCommand(intent, flags, startId);
@@ -104,30 +103,30 @@ public class MyService extends Service {
      *  声明一个内部类binder,b
      *
      */
-     public class MyBinder extends Binder {
+    public class MyBinder extends Binder {
         public MyService getService() {
             // 返回当前对象MyService,这样我们就可在客户端端调用Service的公共方法
             return MyService.this;
         }
     }
 
-   public static class RecycleViewBrodcast extends BroadcastReceiver
-    {
+    public static class RecycleViewBrodcast extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("guangbo","接收到广播");
+            Log.i("guangbo", "接收到广播");
 
-            if(mPlayer!=null && mPlayer.isPlaying()){
+            if (mPlayer != null && mPlayer.isPlaying()) {
                 mPlayer.pause();
-                click_position_second=-1;
+                click_position_second = -1;
             }
         }
     }
-/*
-* 初始化播放
-*
-* */
-    public   void initplay(String url) {
+
+    /*
+     * 初始化播放
+     *
+     * */
+    public void initplay(String url) {
         try {
             if (mPlayer == null) {
                 mPlayer = new MediaPlayer();
@@ -201,11 +200,10 @@ public class MyService extends Service {
 
 
     public void next() {
-        if(State ==0){
+        if (State == 0) {
             positon_click_local++;
             Log.i("MUSIC", "NEXT" + positon_click_local);
-        }
-        else {
+        } else {
             positon_click_internet++;
             Log.i("MUSIC", "NEXT" + positon_click_internet);
         }
@@ -214,7 +212,7 @@ public class MyService extends Service {
             //重置
             mPlayer.reset();
             //加载多媒体文件
-            if(State==0) {
+            if (State == 0) {
                 if (positon_click_local < Local_Music_list.size()) {
                     mPlayer.setDataSource(Local_Music_list.get(positon_click_local).getPath());
                     Log.i("MUSIC", "NEXT" + positon_click_local);
@@ -226,16 +224,15 @@ public class MyService extends Service {
                 } else {
                     Log.i("MUSIC", "zuihou");
                 }
-            }
-            else {
-                if(positon_click_internet<Internet_Music_list.size()){
+            } else {
+                if (positon_click_internet < Internet_Music_list.size()) {
                     mPlayer.setDataSource(Internet_Music_list.get(positon_click_internet).getUrl());
                     mPlayer.prepare();
                     //播放音乐
                     mPlayer.start();
                     addTimer();
+                } else {
                 }
-                else{}
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -245,11 +242,10 @@ public class MyService extends Service {
     }
 
     public void back() {
-        if(State ==0){
+        if (State == 0) {
             positon_click_local--;
             Log.i("MUSIC", "NEXT" + positon_click_local);
-        }
-        else {
+        } else {
             positon_click_internet--;
             Log.i("MUSIC", "NEXT" + positon_click_internet);
         }
@@ -259,7 +255,7 @@ public class MyService extends Service {
 
             //重置
             //加载多媒体文件
-            if(State==0) {
+            if (State == 0) {
                 if (positon_click_local >= 0) {
                     mPlayer.setDataSource(Local_Music_list.get(positon_click_local).getPath());
                     Log.i("MUSIC", "back" + positon_click_local);
@@ -271,16 +267,15 @@ public class MyService extends Service {
                 } else {
                     Log.i("MUSIC", "最前");
                 }
-            }
-            else {
-                if(positon_click_internet>0){
+            } else {
+                if (positon_click_internet > 0) {
                     mPlayer.setDataSource(Internet_Music_list.get(positon_click_internet).getUrl());
                     mPlayer.prepare();
                     //播放音乐
                     mPlayer.start();
                     addTimer();
+                } else {
                 }
-                else{}
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -288,8 +283,6 @@ public class MyService extends Service {
 
 
     }
-
-
 
 
 }
