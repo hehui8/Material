@@ -1,6 +1,7 @@
 package com.example.he.material.Fragment_List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.he.material.Activity.MusicActivity;
 import com.example.he.material.Activity.NewRecentSearchActivity;
 import com.example.he.material.Adapter.SearchRecentAdapter;
 import com.example.he.material.Adapter.SearchResultAdapter;
@@ -41,7 +43,7 @@ public class SearchResultFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<Song> searchresult;
     private SearchResultAdapter adapter;
-    private  View mEmpty;
+    private View mEmpty;
 
 
     public static SearchResultFragment newInstance() {
@@ -67,7 +69,7 @@ public class SearchResultFragment extends Fragment {
         recyclerView = view.findViewById(R.id.search_result_list);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getNewRecentSearchActivity());
         recyclerView.setLayoutManager(mLayoutManager);
-        mEmpty =view.findViewById(R.id.empty);
+        mEmpty = view.findViewById(R.id.empty);
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -76,19 +78,32 @@ public class SearchResultFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        searchresult=getNewRecentSearchActivity().getList();
-        if(searchresult == null){
-            searchresult =new ArrayList<>();
+        searchresult = getNewRecentSearchActivity().getList();
+        if (searchresult == null) {
+            searchresult = new ArrayList<>();
         }
         if (adapter == null) {
             adapter = new SearchResultAdapter(searchresult, new SearchRecentAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
-                    if (position > 0) {
-                   /*     getNewRecentSearchActivity().getSearchText().setText(searchresult.get(position));*/
-
+                    if (position >= 0) {
+                        Song song = searchresult.get(position);
+                        String string = song.getPath();
+                        if (!string.isEmpty()){
+                            Intent resultIntent = new Intent(getContext(), MusicActivity.class);
+                            resultIntent.putExtra("from", "result");
+                            Bundle bundle=new Bundle();
+                            bundle.putString("pathUrl", string);
+                            bundle.putString("Title",song.getSongName());
+                            resultIntent.putExtra("clickResult",bundle);
+                            startActivity(resultIntent);
+                        }
+                        else{
+                            //无url处理
+                        }
                     }
                 }
+
                 @Override
                 public void onLongClick(int position) {
                 }
@@ -117,10 +132,17 @@ public class SearchResultFragment extends Fragment {
     }
 
 
-    public void setEmpty(){
-        if(mEmpty!=null){
-            mEmpty.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.INVISIBLE);
+    public void setEmpty(boolean visable) {
+        if(visable) {
+            if (mEmpty != null) {
+                mEmpty.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.INVISIBLE);
+            }
+        }else {
+            if(mEmpty != null) {
+                mEmpty.setVisibility(View.INVISIBLE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
         }
     }
 

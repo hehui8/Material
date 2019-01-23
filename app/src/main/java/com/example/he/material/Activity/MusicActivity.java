@@ -22,14 +22,17 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
-import com.example.he.material.MODLE.GEDAN.Songs;
 import com.example.he.material.MODLE.Music;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
 import com.example.he.material.Controler.Utils;
+
 import java.io.Serializable;
 import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MusicActivity extends AppCompatActivity {
@@ -49,16 +52,16 @@ public class MusicActivity extends AppCompatActivity {
     private Intent mIntent;
     private ServiceConnection mConn;
     private int mProgress;
-    private int position_current;//当前播放位置
+    private int CurrentPosition;//当前播放位置
     private ObjectAnimator animator;
     private ViewPager mViewPager;
     //music对象属性
 
-    private List<Music> mMusics_Local;
-    private List<Songs> mMusics_Internet;
-    private int click_item;
+    private List<Music> LocalList;
+    private List<Song> InternetList;
+    private int clickItem;
     private Toolbar mToolbar;
-    private int State_from;
+    private int stateFrom;
 
 
     @SuppressLint("ResourceType")
@@ -70,13 +73,13 @@ public class MusicActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
-        music_title =  findViewById(R.id.music_title);
+        music_title = findViewById(R.id.music_title);
         mToolbar = findViewById(R.id.mytoolbar_music);
-        mBack =  findViewById(R.id.back);
+        mBack = findViewById(R.id.back);
         mplay = findViewById(R.id.play);
         mnext = findViewById(R.id.next);
-        mSeekBar =  findViewById(R.id.sb);
-        tv_progress =  findViewById(R.id.tv_progress);
+        mSeekBar = findViewById(R.id.sb);
+        tv_progress = findViewById(R.id.tv_progress);
         tv_total = findViewById(R.id.tv_total);
         mCircleImageView = findViewById(R.id.pricture_img);
         mPricture = findViewById(R.id.geci_text);
@@ -87,43 +90,47 @@ public class MusicActivity extends AppCompatActivity {
         mIntent = new Intent(this, MyService.class);
         //区分从local 和 internet 发送来的Intent
         if (intent_data.getStringExtra("from").equals("Local")) {
-            State_from = 0;
+            stateFrom = 0;
             Bundle mbundle = intent_data.getBundleExtra("data");
-            click_item = mbundle.getInt("itemId");//点击的位置编号
-
-            position_current = click_item;//当前播放位置等于点击位置
-            mMusics_Local = (List<Music>) getIntent().getSerializableExtra("music");
-
-            //将数据传给service
+            clickItem = mbundle.getInt("itemId");//点击的位置编号
+            CurrentPosition = clickItem;//当前播放位置等于点击位置
+            LocalList = (List<Music>) getIntent().getSerializableExtra("music");
             mIntent.putExtra("from", "Local");
-            mIntent.putExtra("position", click_item);
-            mIntent.putExtra("music", (Serializable) mMusics_Local);
+            mIntent.putExtra("position", clickItem);
+            mIntent.putExtra("music", (Serializable) LocalList);
             startService(mIntent);
-            music_title.setText(mMusics_Local.get(position_current).getName());
+            music_title.setText(LocalList.get(CurrentPosition).getName());
             Glide.with(this).load(getResources().getDrawable(R.drawable.default_img)).into(mCircleImageView);
-        /*    mCircleImageView.setImageBitmap(Utils.getArtAlbum(this, mMusics_Local.get(position_current).getImageId()));*/
-        } else{
-            State_from = 1;
+        } else if (intent_data.getStringExtra("from").equals("Internet")) {
+            stateFrom = 1;
             Bundle mbundle = intent_data.getBundleExtra("data");
-            click_item = mbundle.getInt("itemId");//点击的位置编号
-
-            position_current = click_item;//当前播放位置等于点击位置
-            mMusics_Internet = (List<Songs>) getIntent().getSerializableExtra("song");
-
+            clickItem = mbundle.getInt("itemId");//点击的位置编号
+            CurrentPosition = clickItem;//当前播放位置等于点击位置
+            InternetList = (List<Song>) getIntent().getSerializableExtra("song");
             //将数据传给service
             mIntent.putExtra("from", "Internet");
-            mIntent.putExtra("position", click_item);
-            mIntent.putExtra("song", (Serializable) mMusics_Internet);
+            mIntent.putExtra("position", clickItem);
+            mIntent.putExtra("song", (Serializable) InternetList);
             startService(mIntent);
-            music_title.setText(mMusics_Internet.get(position_current).getTitle());
+            music_title.setText(InternetList.get(CurrentPosition).getSongName());
             if (mCircleImageView != null) {
-                Glide.with(this).load(mMusics_Internet.get(position_current).getPic()).into(mCircleImageView);
+                Glide.with(this).load(R.drawable.default_img).into(mCircleImageView);
             }
+        } else if (intent_data.getStringExtra("from").equals("result")) {
+            stateFrom = 2;
+            Bundle bundle = intent_data.getBundleExtra("clickResult");
+            String url = bundle.getString("pathUrl");
+
+            if (url != null && !url.isEmpty()) {
+                music_title.setText(bundle.getString("Title"));
+                mIntent.putExtra("from", "urlPath");
+                mIntent.putExtra("urlpath",url);
+                startService(mIntent);
+            }
+            //将数据传给service
+
 
         }
-
-        // mCircleImageView.setImageBitmap(Utils.getArtAlbum(this,mMusics.get(position_current).getImageId()));
-        //Glide.with(this).load(Utils.getArtAlbum(this,mMusics.get(position_current).getId()).into(mCircleImageView);
 
         //与服务器端交互的接口方法 绑定服务的时候被回调，在这个方法获取绑定Service传递过来的IBinder对象，
         //通过这个IBinder对象，实现activity和Service的交互。
@@ -134,6 +141,7 @@ public class MusicActivity extends AppCompatActivity {
                 mService = binder.getService();
                 //可以通过mService调用service中方法
             }
+
             @Override
             public void onServiceDisconnected(ComponentName name) {
             }
@@ -142,7 +150,6 @@ public class MusicActivity extends AppCompatActivity {
         bindService(mIntent, mConn, Service.BIND_AUTO_CREATE);
         //动画
         initanimator();
-
 
         //当从主activity切换至musicactivity时，歌曲自动开始播放，动画开始
         animator.start();
@@ -189,24 +196,25 @@ public class MusicActivity extends AppCompatActivity {
         mnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (State_from == 0) {
-                    if (position_current < (mMusics_Local.size() - 1)) {
-                        position_current++;//如果选择下一首，那么当前播放位置加一
-                        mCircleImageView.setImageBitmap(Utils.getArtAlbum(MusicActivity.this, mMusics_Local.get(position_current).getImageId()));
-                        music_title.setText(mMusics_Local.get(position_current).getName());
+                if (stateFrom == 0) {
+                    if (CurrentPosition < (LocalList.size() - 1)) {
+                        CurrentPosition++;//如果选择下一首，那么当前播放位置加一
+                        mCircleImageView.setImageBitmap(Utils.getArtAlbum(MusicActivity.this,
+                                LocalList.get(CurrentPosition).getImageId()));
+                        music_title.setText(LocalList.get(CurrentPosition).getName());
                         animator.start();
                         mService.next();
                     } else {
                         Toast.makeText(MusicActivity.this, "已经是最后一首了", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    if (position_current < (mMusics_Internet.size() - 1)) {
-                        position_current++;//如果选择下一首，那么当前播放位置加一
+                    if (CurrentPosition < (InternetList.size() - 1)) {
+                        CurrentPosition++;//如果选择下一首，那么当前播放位置加一
 
                         Glide.with(MusicActivity.this)
-                                .load(mMusics_Internet.get(position_current).getPic())
+                                .load(R.drawable.default_img)
                                 .into(mCircleImageView);
-                        music_title.setText(mMusics_Internet.get(position_current).getTitle());
+                        music_title.setText(InternetList.get(CurrentPosition).getSongName());
                         animator.start();
                         mService.next();
                     } else {
@@ -218,21 +226,22 @@ public class MusicActivity extends AppCompatActivity {
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (State_from == 0) {
-                    if (position_current < (mMusics_Local.size() - 1)) {
-                        position_current--;//如果选择上一首，那么当前播放位置加一
-                        mCircleImageView.setImageBitmap(Utils.getArtAlbum(MusicActivity.this, mMusics_Local.get(position_current).getImageId()));
-                        music_title.setText(mMusics_Local.get(position_current).getName());
+                if (stateFrom == 0) {
+                    if (CurrentPosition < (LocalList.size() - 1)) {
+                        CurrentPosition--;//如果选择上一首，那么当前播放位置加一
+                        mCircleImageView.setImageBitmap(Utils.getArtAlbum(MusicActivity.this,
+                                LocalList.get(CurrentPosition).getImageId()));
+                        music_title.setText(LocalList.get(CurrentPosition).getName());
                         animator.start();
                         mService.back();
                     } else {
                         Toast.makeText(MusicActivity.this, "已经是第一首了", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    if (position_current < (mMusics_Internet.size() - 1)) {
-                        position_current--;//如果选择上一首，那么当前播放位置减一
-                        Glide.with(MusicActivity.this).load(mMusics_Internet.get(position_current).getPic()).into(mCircleImageView);
-                        music_title.setText(mMusics_Internet.get(position_current).getTitle());
+                    if (CurrentPosition < (InternetList.size() - 1)) {
+                        CurrentPosition--;//如果选择上一首，那么当前播放位置减一
+                        Glide.with(MusicActivity.this).load(R.drawable.default_img).into(mCircleImageView);
+                        music_title.setText(InternetList.get(CurrentPosition).getSongName());
                         animator.start();
                         mService.back();
                     } else {

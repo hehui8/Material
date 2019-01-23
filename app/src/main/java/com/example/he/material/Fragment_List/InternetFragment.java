@@ -13,15 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
-import com.example.he.material.Activity.MainActivity;
 import com.example.he.material.Activity.MusicActivity;
-import com.example.he.material.Adapter.Music_Internet_Adapter;
+import com.example.he.material.Adapter.musicInternetAdapter;
 import com.example.he.material.MODLE.GEDAN.Root;
-import com.example.he.material.MODLE.GEDAN.Songs;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,11 +38,11 @@ public class InternetFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Context context;
     public static Intent intent;
-    private Music_Internet_Adapter adapter;
-    private static List<Songs> InternetList;
+    private musicInternetAdapter adapter;
+    private  List<Song> InternetList;
 
 
-    public InternetFragment(List<Songs> addressList, Context context) {
+    public InternetFragment(List<Song> addressList, Context context) {
         this.InternetList = addressList;
         this.context = context;
     }
@@ -65,13 +64,11 @@ public class InternetFragment extends Fragment {
         /**
          *    构造适配器时传入一个数据数组和一个监听接口并重写其点击事件方法
          */
-        adapter = new Music_Internet_Adapter(InternetList, new Music_Internet_Adapter.OnItemClickListener() {
+        adapter = new musicInternetAdapter(InternetList, new musicInternetAdapter.OnItemClickListener() {
 
             @Override
             public void onClick(int position) {
                 Intent intent1 = new Intent(context, MusicActivity.class);
-                Log.i("itemtouch", position + "移除后的点击位置");
-                Songs music = InternetList.get(position);
                 Bundle data = new Bundle();
                 data.putInt("itemId", position);
                 intent1.putExtra("from", "Internet");
@@ -111,19 +108,16 @@ public class InternetFragment extends Fragment {
             public void run() {
                 try {
                     OkHttpClient client = new OkHttpClient.Builder().build();
-                    String json = "{\"TransCode\":\"020111\",\"OpenId\":\"TEST\",\"Body\":{\"SongListId\":" + "2429050789" + "}}";
-                    RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json);
                     Request request = new Request.Builder()
-                            .url("https://api.hibai.cn/api/index/index")
-                            .post(requestBody)
+                            .url("http://192.168.55.15:8080/TestMusic/Daily")
+                            .get()
                             .build();
                     Response response = client.newCall(request).execute();
-                    String reuqest = response.body().string();
+                    String requestJson = response.body().string();
                     Gson gson = new Gson();
-                    Root root = gson.fromJson(reuqest, Root.class);
+                    List<Song> temp=gson.fromJson(requestJson, new TypeToken<List<Song>>() {}.getType());
                     InternetList.clear();
-                    InternetList.addAll( root.getBody().getSongs());
-                    Log.d("number","number is "+InternetList.size());
+                    InternetList.addAll(temp);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

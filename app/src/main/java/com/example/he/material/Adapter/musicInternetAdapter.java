@@ -10,16 +10,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.he.material.MODLE.GEDAN.Songs;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 
 import java.util.List;
 
-public class Music_Internet_Adapter extends RecyclerView.Adapter<Music_Internet_Adapter.ViewHolderInternet>{
+public class musicInternetAdapter extends RecyclerView.Adapter<musicInternetAdapter.ViewHolderInternet>{
 
         private Context mContext;
-        private List<Songs> mMusicList;
+        private List<Song> mMusicList;
         private OnItemClickListener mOnItemClickListener;
 
 
@@ -37,7 +37,7 @@ public class Music_Internet_Adapter extends RecyclerView.Adapter<Music_Internet_
     }
 
     //构造适配器时需要传入一个musiclist和 一个监听接口
-    public Music_Internet_Adapter(List<Songs> musicList, Music_Internet_Adapter.OnItemClickListener mOnItemClickListener) {
+    public musicInternetAdapter(List<Song> musicList, musicInternetAdapter.OnItemClickListener mOnItemClickListener) {
         this.mMusicList = musicList;
         this.mOnItemClickListener=mOnItemClickListener;
     }
@@ -56,22 +56,9 @@ public class Music_Internet_Adapter extends RecyclerView.Adapter<Music_Internet_
 
         @Override
         public void onBindViewHolder(ViewHolderInternet holder, final int position) {
-            Songs songs = mMusicList.get(position);
-            System.out.print("运行到这里");
-            Log.i("onbindview"," " +songs.getTitle());
-            holder.mMusicName.setText("  "+songs.getTitle());
-
-            Glide.with(mContext)
-
-                    .load(songs.getPic())
-
-                    .into(holder.mMusicImage);
-            //设置图片
-            //Log.i("huoqu",music.getImageId()+"imageid");
-            //Bitmap albumBitmapItem = Utils.getArtAlbum(mContext,music.getImageId());
-            //holder.mMusicImage.setImageBitmap(albumBitmapItem);
-
-
+            Song song = mMusicList.get(position);
+            holder.mMusicName.setText("  "+song.getSongName());
+            Glide.with(mContext).load(R.drawable.default_img).into(holder.mMusicImage);
             if( mOnItemClickListener!= null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

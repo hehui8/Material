@@ -32,13 +32,14 @@ import com.example.he.material.DataBase;
 import com.example.he.material.Controler.DataBaseControler;
 import com.example.he.material.Fragment_List.InternetFragment;
 import com.example.he.material.MODLE.GEDAN.Root;
-import com.example.he.material.MODLE.GEDAN.Songs;
 import com.example.he.material.MODLE.Music;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.MODLE.User;
 import com.example.he.material.R;
 import com.example.he.material.Fragment_List.LocalMusicFragment;
 import com.example.he.material.Controler.Utils;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,14 +69,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout mDrawerLayout;
     private List<Music> mMusicList, musicList;
     private List<Fragment> mFragmentList = new ArrayList<>();
-    private List<Songs> music_internet_list = new ArrayList<>();
+    private List<Song> musicInternetList = new ArrayList<>();
     private LocalMusicFragment s1;
     private InternetFragment i1;
     private User user = null;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private ViewPager viewPager;//viewpager 对象
     private static int FLAG = 0; //登陆状态，默认为0（未登录）
-    private static String str_request_cloudmusic;//该变量接受api接口返回的json字符串
+    private static String strRequestCloudmusic;//该变量接受api接口返回的json字符串
     private Root root;
     private static boolean isExit = false;
 
@@ -192,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             "charset=utf-8"), json);
                                     final Request request = new Request.Builder()
                                             //.url("http://118.25.27.150:8080/Music/Servlet_1")
-                                            .url("http://118.25.27.150:8080/Music/Servlet_2")
+                                            .url("http://192.168.55.15:8080/TestMusic/LogoutServlet")
                                             .post(requestBody)
                                             .build();
                                     Call call = client_exit.newCall(request);
@@ -290,19 +291,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mTextview.setText(name);
                 FLAG = 1;
                 try {
-                    sendRequest("2429050789");
-                } catch (InterruptedException e) {
+                    sendRequest();
+                    Gson gson = new Gson();
+                    List<Song> temp = gson.fromJson(strRequestCloudmusic, new TypeToken<List<Song>>() {
+                    }.getType());
+                    musicInternetList.clear();
+                    musicInternetList.addAll(temp);
+                    i1 = new InternetFragment(musicInternetList, MainActivity.this);
+                    mFragmentList.add(i1);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                //Log.i("ResponseToStiring_1",str_request_cloudmusic);
+                //Log.i("ResponseToStiring_1",strRequestCloudmusic);
 
-                root = JsonToBean(str_request_cloudmusic);
-                music_internet_list = root.getBody().getSongs();
-                i1 = new InternetFragment(music_internet_list, MainActivity.this);
-
-                mFragmentList.add(i1);
-                viewPager.getAdapter().notifyDataSetChanged();
-
+                if (viewPager.getAdapter() != null) {
+                    viewPager.getAdapter().notifyDataSetChanged();
+                }
             }
         } else {
             FLAG = 0;
@@ -336,8 +340,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.search:
                 if (/*FLAG == 1*/true) {
                   /*  Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                    intent.putExtra("Internet_data", (Serializable) music_internet_list);*/
-                  Intent intent =new Intent(MainActivity.this,NewRecentSearchActivity.class);
+                    intent.putExtra("Internet_data", (Serializable) musicInternetList);*/
+                    Intent intent = new Intent(MainActivity.this, NewRecentSearchActivity.class);
 
                     startActivity(intent);
                 } else {
@@ -350,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         transaction.commit();
     }
+
     /**
      * @param json_str json 字符串
      */
@@ -369,24 +374,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String json = "{\"TransCode\":\"020111\",\"OpenId\":\"TEST\",\"Body\":{\"SongListId\":" + id + "}}";
                     RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json);
                     Request request = new Request.Builder()
-
                             .url("https://api.hibai.cn/api/index/index")
                             .post(requestBody)
                             .build();
                     Response response = client.newCall(request).execute();
-                    str_request_cloudmusic = response.body().string();
-
+                    strRequestCloudmusic = response.body().string();
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
             }
         };
         thread.start();
         thread.join();
         //join方法作用是父线程等待子线程任务处理完毕
+    }
+
+    public void sendRequest() {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    OkHttpClient client = new OkHttpClient.Builder().build();
+                    Request request = new Request.Builder()
+                            .url("http://192.168.55.15:8080/TestMusic/Daily")
+                            .get()
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    strRequestCloudmusic = response.body().string();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        try {
+            thread.start();
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -447,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
 
-            }else if(v.getId() == R.id.txt_2){
+            } else if (v.getId() == R.id.txt_2) {
                 Drawable drawable = getDrawable(R.drawable.ic_in_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
@@ -467,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tab3.setCompoundDrawables(null, drawable, null, null);
                     tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
-            }else {
+            } else {
                 Drawable drawable = getDrawable(R.drawable.user_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());

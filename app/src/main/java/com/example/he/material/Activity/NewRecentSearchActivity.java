@@ -287,8 +287,9 @@ public class NewRecentSearchActivity extends AppCompatActivity {
                     public void run() {
                         if (!list.isEmpty()) {
                             mResultFragment.updateList();
+                            mResultFragment.setEmpty(false);
                         } else {
-                            mResultFragment.setEmpty();
+                            mResultFragment.setEmpty(true);
                         }
                     }
                 });
