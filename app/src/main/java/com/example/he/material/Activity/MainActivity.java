@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             "charset=utf-8"), json);
                                     final Request request = new Request.Builder()
                                             //.url("http://118.25.27.150:8080/Music/Servlet_1")
-                                            .url("http://192.168.55.15:8080/TestMusic/LogoutServlet")
+                                            .url("http://106.15.89.25:8080/TestMusic/LogoutServlet")
                                             .post(requestBody)
                                             .build();
                                     Call call = client_exit.newCall(request);
@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     OkHttpClient client = new OkHttpClient.Builder().build();
                     Request request = new Request.Builder()
-                            .url("http://192.168.55.15:8080/TestMusic/Daily")
+                            .url("http://106.15.89.25:8080/TestMusic/Daily")
                             .get()
                             .build();
                     Response response = client.newCall(request).execute();

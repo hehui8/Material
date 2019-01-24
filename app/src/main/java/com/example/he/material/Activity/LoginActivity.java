@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
                 Request request = new Request.Builder()
                         //.url("http://172.21.187.216:8080/Music/Servlet_1")
                         //服务器url
-                        .url("http://192.168.55.15:8080/TestMusic/LoginServlet")
+                        .url("http://106.15.89.25:8080/TestMusic/LoginServlet")
                         .post(requestBody)
                         .build();
                 Response response =mclient.newCall(request).execute();

@@ -109,7 +109,7 @@ public class InternetFragment extends Fragment {
                 try {
                     OkHttpClient client = new OkHttpClient.Builder().build();
                     Request request = new Request.Builder()
-                            .url("http://192.168.55.15:8080/TestMusic/Daily")
+                            .url("http://106.15.89.25:8080/TestMusic/Daily")
                             .get()
                             .build();
                     Response response = client.newCall(request).execute();

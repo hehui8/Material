@@ -249,7 +249,7 @@ public class NewRecentSearchActivity extends AppCompatActivity {
 
     public void requestForSearch(String string) {
         MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-        String url = "http://192.168.55.15:8080/TestMusic/SearchServlet";
+        String url = "http://106.15.89.25:8080/TestMusic/SearchServlet";
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)

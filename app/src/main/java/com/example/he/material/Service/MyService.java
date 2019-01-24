@@ -80,11 +80,8 @@ MyService extends Service {
                         if (State == 0 || State == 1) {
                             next();
                         } else {
-                            if (localMusicList!=null && !localMusicList.isEmpty()) {
-                                initByPosition1(0);
-                            }else{
-                                pause();
-                            }
+                            mPlayer.reset();
+                            mPlayer = null;
                         }
                     }
                 });
@@ -175,20 +172,21 @@ MyService extends Service {
                 //获得歌曲总时长
                 int duration;
                 int currentPosition;
-                if (mPlayer.isPlaying()) {
-                    duration = mPlayer.getDuration();
-                    //获得歌曲的当前播放进度
-                    currentPosition = mPlayer.getCurrentPosition();
-                    //创建消息对象
-                    Message msg = MusicActivity.handler.obtainMessage();
-
-                    //将音乐的播放进度封装至消息对象中
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("duration", duration);
-                    bundle.putInt("currentPosition", currentPosition);
-                    msg.setData(bundle);
-                    //将消息发送到主线程的消息队列
-                    MusicActivity.handler.sendMessage(msg);
+                if (mPlayer != null) {
+                    if (mPlayer.isPlaying()) {
+                        duration = mPlayer.getDuration();
+                        //获得歌曲的当前播放进度
+                        currentPosition = mPlayer.getCurrentPosition();
+                        //创建消息对象
+                        Message msg = MusicActivity.handler.obtainMessage();
+                        //将音乐的播放进度封装至消息对象中
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("duration", duration);
+                        bundle.putInt("currentPosition", currentPosition);
+                        msg.setData(bundle);
+                        //将消息发送到主线程的消息队列
+                        MusicActivity.handler.sendMessage(msg);
+                    }
                 }
             }
         }, 0, 500);
@@ -274,6 +272,7 @@ MyService extends Service {
 
     public void initByPosition1(int position) {
         try {
+
             mPlayer.reset();
             mPlayer.setDataSource(localMusicList.get(position).getPath());
             mPlayer.prepareAsync();

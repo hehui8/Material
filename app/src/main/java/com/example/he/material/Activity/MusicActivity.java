@@ -348,4 +348,8 @@ public class MusicActivity extends AppCompatActivity {
 
     }
 
+    public TextView getTitleName(){
+        return music_title;
+    }
+
 }
