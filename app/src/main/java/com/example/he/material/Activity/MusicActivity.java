@@ -124,7 +124,7 @@ public class MusicActivity extends AppCompatActivity {
             if (url != null && !url.isEmpty()) {
                 music_title.setText(bundle.getString("Title"));
                 mIntent.putExtra("from", "urlPath");
-                mIntent.putExtra("urlpath",url);
+                mIntent.putExtra("urlpath", url);
                 startService(mIntent);
             }
             //将数据传给service
@@ -153,7 +153,7 @@ public class MusicActivity extends AppCompatActivity {
 
         //当从主activity切换至musicactivity时，歌曲自动开始播放，动画开始
         animator.start();
-        mplay.setBackground(getResources().getDrawable(R.drawable.ic_stop));
+        mplay.setBackground(getResources().getDrawable(R.drawable.ic_pause));
 
 
         //为播放键设置点击监听事件
@@ -163,7 +163,7 @@ public class MusicActivity extends AppCompatActivity {
                 isplaying = !isplaying;
                 if (isplaying) {
                     mService.play();
-                    mplay.setBackground(getResources().getDrawable(R.drawable.pause));
+                    mplay.setBackground(getResources().getDrawable(R.drawable.ic_pause));
                     if (animator.isPaused()) {
                         animator.resume();
                     } else {
@@ -171,7 +171,7 @@ public class MusicActivity extends AppCompatActivity {
                     }
                 } else {
                     mService.pause();
-                    mplay.setBackground(getResources().getDrawable(R.drawable.play));
+                    mplay.setBackground(getResources().getDrawable(R.drawable.ic_play));
                     animator.pause();
                 }
 
@@ -199,8 +199,9 @@ public class MusicActivity extends AppCompatActivity {
                 if (stateFrom == 0) {
                     if (CurrentPosition < (LocalList.size() - 1)) {
                         CurrentPosition++;//如果选择下一首，那么当前播放位置加一
-                        mCircleImageView.setImageBitmap(Utils.getArtAlbum(MusicActivity.this,
-                                LocalList.get(CurrentPosition).getImageId()));
+                        Glide.with(MusicActivity.this)
+                                .load(R.drawable.default_img)
+                                .into(mCircleImageView);
                         music_title.setText(LocalList.get(CurrentPosition).getName());
                         animator.start();
                         mService.next();
@@ -229,8 +230,9 @@ public class MusicActivity extends AppCompatActivity {
                 if (stateFrom == 0) {
                     if (CurrentPosition < (LocalList.size() - 1)) {
                         CurrentPosition--;//如果选择上一首，那么当前播放位置加一
-                        mCircleImageView.setImageBitmap(Utils.getArtAlbum(MusicActivity.this,
-                                LocalList.get(CurrentPosition).getImageId()));
+                        Glide.with(MusicActivity.this)
+                                .load(R.drawable.default_img)
+                                .into(mCircleImageView);
                         music_title.setText(LocalList.get(CurrentPosition).getName());
                         animator.start();
                         mService.back();
@@ -348,7 +350,7 @@ public class MusicActivity extends AppCompatActivity {
 
     }
 
-    public TextView getTitleName(){
+    public TextView getTitleName() {
         return music_title;
     }
 

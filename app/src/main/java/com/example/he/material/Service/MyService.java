@@ -212,10 +212,8 @@ MyService extends Service {
     public void next() {
         if (State == 0) {
             positonClickLocal++;
-            Log.i("MUSIC", "NEXT" + positonClickLocal);
         } else {
             positonClickInternet++;
-            Log.i("MUSIC", "NEXT" + positonClickInternet);
         }
         timer.cancel();
         try {
@@ -225,7 +223,6 @@ MyService extends Service {
             if (State == 0) {
                 if (positonClickLocal < localMusicList.size()) {
                     mPlayer.setDataSource(localMusicList.get(positonClickLocal).getPath());
-                    Log.i("MUSIC", "NEXT" + positonClickLocal);
                     //准备播放音乐
                     mPlayer.prepare();
                     //播放音乐

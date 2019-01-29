@@ -87,10 +87,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
         mytoolbar = findViewById(R.id.mytoolbar);
         initData();
         bindView();
@@ -220,7 +220,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                         mTextview.setText("点击头像登陆");
                                                         FLAG = 0;
                                                         mFragmentList.remove(1);
-                                                        viewPager.getAdapter().notifyDataSetChanged();
+                                                        if(viewPager.getAdapter()!=null){
+                                                            viewPager.getAdapter().notifyDataSetChanged();
+                                                        }
                                                     }
                                                 });
                                             }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/music_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,10 +21,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#efebeb"
-            android:gravity="center"
-            app:navigationIcon="@mipmap/back"
             android:clipToPadding="false"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:gravity="center"
+            app:navigationIcon="@mipmap/back">
 
             <TextView
                 android:id="@+id/music_title"
@@ -32,7 +33,9 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="15dp" />
+                android:textColor="#000000"
+                tools:text="shdsjdhsjd"
+                android:textSize="18sp" />
 
 
         </android.support.v7.widget.Toolbar>
@@ -43,7 +46,7 @@
 
         android:id="@+id/line1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
@@ -64,14 +67,13 @@
                 android:layout_width="220dp"
                 android:layout_height="220dp"
                 android:src="@drawable/xigua"
-                android:text="ssssadasdads"
                 android:visibility="invisible" />
         </FrameLayout>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:gravity="center"
         android:orientation="horizontal">
         <!--
@@ -87,9 +89,9 @@
             android:id="@+id/tv_progress"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
             android:gravity="center"
-            >
+            android:text="00:00"
+            android:textSize="10sp">
 
         </TextView>
 
@@ -97,52 +99,75 @@
             android:id="@+id/sb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@android:color/transparent"
             android:gravity="center"
-            android:layout_weight="1"
-            android:splitTrack="false"
             android:maxHeight="2dp"
             android:progressDrawable="@drawable/play_seekbar_bg"
-            android:thumb="@drawable/slider_thumb_normal"
-            />
+            android:splitTrack="false"
+            android:thumb="@drawable/slider_thumb_normal" />
 
         <TextView
             android:id="@+id/tv_total"
             android:layout_width="40dp"
-            android:paddingLeft="3dp"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:gravity="center">
+            android:gravity="center"
+            android:text="00:00"
+            android:paddingLeft="3dp"
+            android:textSize="10sp">
 
         </TextView>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:gravity="center">
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:id="@+id/random"
+            android:layout_width="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_list_play" />
 
         <ImageView
             android:id="@+id/back"
+            android:layout_gravity="center"
             android:layout_width="30dp"
             android:layout_height="30dp"
-
-            android:layout_marginRight="40dp"
-            android:background="@drawable/ic_prew" />
+            android:layout_marginLeft="40dp"
+            android:background="@drawable/ic_pre" />
 
         <ImageView
             android:id="@+id/play"
+            android:layout_gravity="center"
             android:layout_width="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             android:layout_height="50dp"
-            android:layout_marginRight="40dp"
-            android:scaleType="fitXY"
-            android:background="@drawable/ic_play" />
+            android:background="@drawable/ic_play"
+            android:scaleType="fitXY" />
 
         <ImageView
             android:id="@+id/next"
+            android:layout_gravity="center"
             android:layout_width="30dp"
+            android:layout_marginRight="40dp"
+            android:scaleType="fitXY"
             android:layout_height="30dp"
             android:background="@drawable/ic_next" />
+
+        <ImageView
+            android:id="@+id/love"
+            android:layout_gravity="center"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/ic_love_gray" />
 
     </LinearLayout>
 
