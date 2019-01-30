@@ -71,9 +71,8 @@ public class InternetFragment extends Fragment {
                 Intent intent1 = new Intent(context, MusicActivity.class);
                 Bundle data = new Bundle();
                 data.putInt("itemId", position);
-                intent1.putExtra("from", "Internet");
+                data.putSerializable("music", (Serializable) InternetList);
                 intent1.putExtra("data", data);
-                intent1.putExtra("song", (Serializable) InternetList);
                 startActivity(intent1);
             }
 

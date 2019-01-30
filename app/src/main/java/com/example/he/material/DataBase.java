@@ -17,7 +17,7 @@ public class DataBase  extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql ="create table music (id INTEGER PRIMARY KEY ,name varchar(20),singer varchar(40),imageid INTEGER,path varchar(400))";
+        String sql ="create table music (id INTEGER PRIMARY KEY ,songname varchar(20),aritst varchar(40),path varchar(400))";
         Log.i(TAG,"create database");
         db.execSQL("DROP TABLE IF EXISTS music");
         db.execSQL(sql);

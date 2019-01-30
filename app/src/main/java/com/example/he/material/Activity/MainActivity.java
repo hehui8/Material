@@ -32,7 +32,6 @@ import com.example.he.material.DataBase;
 import com.example.he.material.Controler.DataBaseControler;
 import com.example.he.material.Fragment_List.InternetFragment;
 import com.example.he.material.MODLE.GEDAN.Root;
-import com.example.he.material.MODLE.Music;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.MODLE.User;
 import com.example.he.material.R;
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Toolbar mytoolbar;
     private NavigationView navigationView;
     private DrawerLayout mDrawerLayout;
-    private List<Music> mMusicList, musicList;
+    private List<Song> mMusicList, musicList;
     private List<Fragment> mFragmentList = new ArrayList<>();
     private List<Song> musicInternetList = new ArrayList<>();
     private LocalMusicFragment s1;
@@ -123,13 +122,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         DataBaseControler mDBC = new DataBaseControler();
         for (int i = 0; i < mMusicList.size(); i++) {
             if (mMusicList.get(i) != null) {
-                Music music = mMusicList.get(i);
+                Song music = mMusicList.get(i);
                 System.out.print("id" + mMusicList.get(i).getId());
 
                 Utils mUtils = new Utils();
 
-                mDBC.insert(mDatabase, music.getId(), music.getName(), music.getSinger(), music.getImageId(), music
-                        .getPath());
+                mDBC.insert(mDatabase, music.getId(), music.getSongName(), music.getArtist(), music.getPath());
             }
         }
         musicList = mDBC.query(mDatabase);
@@ -137,10 +135,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //UI组件初始化与事件绑定
     private void bindView() {
-        navigationView = (NavigationView) findViewById(R.id.navigation);
+        navigationView = findViewById(R.id.navigation);
         View headView = navigationView.getHeaderView(0);
-        circleImageView = (CircleImageView) headView.findViewById(R.id.daohang_view);
-        mTextview = (TextView) headView.findViewById(R.id.daohang_name);
+        circleImageView =  headView.findViewById(R.id.daohang_view);
+        mTextview =  headView.findViewById(R.id.daohang_name);
         //点击头像图标触发登录选项
         circleImageView.setOnClickListener(new View.OnClickListener() {
             @Override

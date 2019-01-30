@@ -6,6 +6,8 @@ import android.text.StaticLayout;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.example.he.material.MODLE.Song;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +21,8 @@ import java.util.List;
  * note : 说明
  */
 public class DataUtils {
-     static List<String> recentDataList = new ArrayList<>();
+    private static List<String> recentDataList = new ArrayList<>();
+    private static List<Song> LoveSongList = new ArrayList<>();
 
     /**
      * 将搜索框的文本保存到searchRecent数组中
@@ -63,12 +66,14 @@ public class DataUtils {
     public static void hideSoftKeyboard(Context context, List<View> viewList) {
         if (viewList == null) return;
 
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         for (View v : viewList) {
             inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
     public static void showKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) view.getContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -78,19 +83,59 @@ public class DataUtils {
         }
     }
 
-    public static void hideKeyboard(View view){
+    public static void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) view.getContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(),0);
-        }
-    }
-    public static void  toggleSoftInput(View view){
-        InputMethodManager imm = (InputMethodManager) view.getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.toggleSoftInput(0,0);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
+    public static void toggleSoftInput(View view) {
+        InputMethodManager imm = (InputMethodManager) view.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.toggleSoftInput(0, 0);
+        }
+    }
+
+
+    public static void addToLoveList(Song song) {
+        if (song != null && LoveSongList.size() > 0) {
+            int i = 0;
+            for (i = 0; i < LoveSongList.size(); i++) {
+                int findId = LoveSongList.get(i).getId();
+                int id = song.getId();
+                if (id == findId) {
+                    break;
+                }
+            }
+            if (i == (LoveSongList.size() - 1)) {
+                LoveSongList.add(song);
+            }
+        }
+        if (LoveSongList.size() == 0) {
+            LoveSongList.add(song);
+        }
+    }
+
+    public static void removeFromLoveList(Song song) {
+        if (song != null && LoveSongList.size() > 0) {
+            for (int i = 0; i < LoveSongList.size(); i++) {
+                int findId = LoveSongList.get(i).getId();
+                int id = song.getId();
+                if (id == findId) {
+                    LoveSongList.remove(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    public static List<Song> returnLoveList() {
+        if (LoveSongList != null) {
+            return LoveSongList;
+        }
+        return null;
+    }
 }

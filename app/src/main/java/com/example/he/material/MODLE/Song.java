@@ -9,6 +9,23 @@ public class Song implements Serializable {
     private String album;
     private String path;
 	private String lrc;
+	public Song(){
+	    super();
+    }
+    public  Song(int id, String artist,String songName,String album,String path){
+	    this.id=id;
+	    this.artist=artist;
+	    this.songName=songName;
+	    this.album=album;
+	    this.path=path;
+    }
+    public  Song(int id, String artist,String songName,String path){
+        this.id=id;
+        this.artist=artist;
+        this.songName=songName;
+        this.path=path;
+    }
+
     public int getId() {
 		return id;
 	}

@@ -12,8 +12,6 @@ import android.os.Message;
 import android.util.Log;
 
 import com.example.he.material.Activity.MusicActivity;
-import com.example.he.material.MODLE.GEDAN.Songs;
-import com.example.he.material.MODLE.Music;
 import com.example.he.material.MODLE.Song;
 
 import java.io.IOException;
@@ -29,64 +27,44 @@ MyService extends Service {
     public MyBinder mMyBinder = new MyBinder();
     private static MediaPlayer mPlayer;
     private Timer timer;
-    private String path_service;
-    private List<Music> localMusicList;
-    private List<Song> internetMusicList;
-    private static int positonClickLocal;//当前lcoal点击的选项标号
-    private static int positonClickInternet;//当前internet点击的选项标号
-    private boolean isplay;
+    private List<Song> SongList;
+    private static int ClickPosition;//当前lcoal点击的选项标号
     private int State = 0;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //initplay();
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        String type = intent.getStringExtra("from");
-        if (type != null) {
-            //获取从MusicActivity传送过来的数据，同样需作区分
-            if (type.equals("Local")) {
+        SongList = (List<Song>) intent.getSerializableExtra("music");
+        ClickPosition = intent.getIntExtra("position", -1);
+        //clickPositionSecond ===当前播放位置
+        if (SongList != null && !SongList.isEmpty()) {
+            if ((clickPositionSecond == -1) || (clickPositionSecond != ClickPosition)) {
+                clickPositionSecond = ClickPosition;
                 State = 0;
-                localMusicList = (List<Music>) intent.getSerializableExtra("music");
-                positonClickLocal = intent.getIntExtra("position", -1);
-                //clickPositionSecond ===当前播放位置
-                if ((clickPositionSecond == -1) || (clickPositionSecond != positonClickLocal)) {
-                    clickPositionSecond = positonClickLocal;
-                    initplay(localMusicList.get(clickPositionSecond).getPath());
-                }
-            } else if (type.equals("Internet")) {
+                initplay(SongList.get(clickPositionSecond).getPath());
+            }
+        } else if (intent.getStringExtra("urlpath") != null) {
+            String urlPath = intent.getStringExtra("urlpath");
+            if (urlPath != null && !urlPath.isEmpty()) {
                 State = 1;
-                internetMusicList = (List<Song>) intent.getSerializableExtra("song");
-                positonClickInternet = intent.getIntExtra("position", -1);
-
-                if ((clickPositionSecond == -1) || (clickPositionSecond != positonClickInternet)) {
-                    clickPositionSecond = positonClickInternet;
-                    initplay(internetMusicList.get(clickPositionSecond).getPath());
-                }
-            } else if (type.equals("urlPath")) {
-                State = 2;
-                String urlPath = intent.getStringExtra("urlpath");
                 initplay(urlPath);
             }
-            if (mPlayer != null) {
-                mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        if (State == 0 || State == 1) {
-                            next();
-                        } else {
-                            mPlayer.reset();
-                            mPlayer = null;
-                        }
-                    }
-                });
-            }
         }
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (State == 0) {
+                    next();
+                } else {
+                    mPlayer.reset();
+                    mPlayer = null;
+                }
+            }
+        });
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -127,6 +105,7 @@ MyService extends Service {
                 clickPositionSecond = -1;
             }
         }
+
     }
 
     /*
@@ -210,36 +189,21 @@ MyService extends Service {
 
 
     public void next() {
-        if (State == 0) {
-            positonClickLocal++;
-        } else {
-            positonClickInternet++;
-        }
+
+        ClickPosition++;
         timer.cancel();
         try {
             //重置
             mPlayer.reset();
             //加载多媒体文件
-            if (State == 0) {
-                if (positonClickLocal < localMusicList.size()) {
-                    mPlayer.setDataSource(localMusicList.get(positonClickLocal).getPath());
-                    //准备播放音乐
-                    mPlayer.prepare();
-                    //播放音乐
-                    mPlayer.start();
-                    addTimer();
-                }
-            } else if (State == 1) {
-                if (positonClickInternet < internetMusicList.size()) {
-                    mPlayer.setDataSource(internetMusicList.get(positonClickInternet).getPath());
-                    mPlayer.prepare();
-                    //播放音乐
-                    mPlayer.start();
-                    addTimer();
-                } else {
-                }
+            if (ClickPosition < SongList.size()) {
+                mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
+                //准备播放音乐
+                mPlayer.prepare();
+                //播放音乐
+                mPlayer.start();
+                addTimer();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -248,21 +212,17 @@ MyService extends Service {
     }
 
     public void back() {
-        if (State == 0) {
-            positonClickLocal--;
-        } else {
-            positonClickInternet--;
-        }
+        ClickPosition--;
         timer.cancel();
         mPlayer.reset();
 
         if (State == 0) {
-            if (positonClickLocal >= 0) {
-                initByPosition1(positonClickLocal);
+            if (ClickPosition >= 0) {
+                initByPosition1(ClickPosition);
             }
         } else {
-            if (positonClickInternet > 0) {
-                initByPosition2(positonClickInternet);
+            if (ClickPosition > 0) {
+                initByPosition2(ClickPosition);
             }
         }
     }
@@ -271,7 +231,7 @@ MyService extends Service {
         try {
 
             mPlayer.reset();
-            mPlayer.setDataSource(localMusicList.get(position).getPath());
+            mPlayer.setDataSource(SongList.get(position).getPath());
             mPlayer.prepareAsync();
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -288,7 +248,7 @@ MyService extends Service {
     public void initByPosition2(int position) {
         try {
             mPlayer.reset();
-            mPlayer.setDataSource(internetMusicList.get(position).getPath());
+            mPlayer.setDataSource(SongList.get(position).getPath());
             mPlayer.prepareAsync();
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override

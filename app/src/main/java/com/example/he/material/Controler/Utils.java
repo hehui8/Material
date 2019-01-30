@@ -14,9 +14,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Button;
 
-import com.example.he.material.MODLE.Music;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 
 import java.io.ByteArrayOutputStream;
@@ -24,18 +23,17 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.CallSite;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
     private static String TAG="database";
     //定义一个集合，存放从本地读取到的内容
-    public static List<Music> list;
-    public static Music music;
+    public static List<Song> list;
+    public static Song music;
     private static final Uri albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
-    public static List<Music> getmusic(Context context) {
+    public static List<Song> getmusic(Context context) {
         list = new ArrayList<>();
         int id=0;
         MediaScannerConnection.scanFile(context, new String[] {
@@ -44,25 +42,16 @@ public class Utils {
                 , null, null, null, MediaStore.Audio.Media.IS_MUSIC);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                music=new Music(0,"","","",0);
+                music=new Song();
                 music.setId(id);
-                music.setImageId(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)));
-                music.setName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)));
-
-                music.setSinger(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)));
-
+                music.setSongName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)));
+                music.setArtist(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)));
                 music.setPath(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)));
-
-                music.setSize(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
-
-                //music.setAlbumId(cursor.getColumnIndexOrThrow(MediaStore.Audio.));
-
                 id++;
                 list.add(music);
                 music=null;
             }
         }
-
         cursor.close();
         return list;
 

@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 
 import com.example.he.material.Activity.MusicActivity;
 import com.example.he.material.Adapter.MusicAdapter;
-import com.example.he.material.MODLE.Music;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 
 import java.io.Serializable;
@@ -27,7 +27,7 @@ import java.util.List;
 
 @SuppressLint("ValidFragment")
 public class LocalMusicFragment extends Fragment {
-    private static List<Music> addressList;
+    private static List<Song> addressList;
 
     private RecyclerView recyclerView;
     private LinearLayout linearLayout;
@@ -38,7 +38,7 @@ public class LocalMusicFragment extends Fragment {
     private Handler mhandle = new Handler();
     private int REFRESH_UI = 100;
 
-    public LocalMusicFragment(List<Music> addressList, Context context) {
+    public LocalMusicFragment(List<Song> addressList, Context context) {
         this.addressList = addressList;
         this.context = context;
     }
@@ -108,13 +108,10 @@ public class LocalMusicFragment extends Fragment {
             @Override
             public void onClick(int position) {
                 Intent intent1 = new Intent(context, MusicActivity.class);
-                Log.i("itemtouch", position + "移除后的点击位置");
-                Music music = addressList.get(position);
                 Bundle data = new Bundle();
                 data.putInt("itemId", position);
-                intent1.putExtra("from", "Local");
+                data.putSerializable("music", (Serializable) addressList);
                 intent1.putExtra("data", data);
-                intent1.putExtra("music", (Serializable) addressList);
                 startActivity(intent1);
             }
             @Override
