@@ -13,14 +13,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.he.material.MODLE.User;
-
 import com.example.he.material.R;
 import com.example.he.material.Utils.AndroidWorkaround;
 import com.example.he.material.Utils.SPUtils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -36,6 +34,12 @@ public class LoginActivity extends AppCompatActivity {
     String password;
     private User user = null;
 
+    private EditText mLogin_password;
+    private EditText mLogin_username;
+    private CircleImageView mLogin_view;
+    private Button mLogin_register;
+    private Button mLogin_login;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         if (AndroidWorkaround.checkDeviceHasNavigationBar(this)) {
             AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
         }
+
+
         /*
          * 初始化控件
          * */
@@ -56,34 +62,47 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
 //        获取文本框入的账号信息
+
         mLogin_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 username = mLogin_username.getText().toString();
                 password = mLogin_password.getText().toString();
+
                 if (!username.isEmpty() && !password.isEmpty()) {
-                    User user = new User(username, password);
-                    //声明一个asynctask对象并实例化
-                    OkHttpRequestAsynctask okHttpRequest = new OkHttpRequestAsynctask();
-                    //调用execute方法
-                    okHttpRequest.execute(user);
+
+                    if (username == null || password == null) {
+
+                        Toast.makeText(LoginActivity.this, "请输入账号或密码", Toast.LENGTH_LONG).show();
+                    } else {
+
+                        User user = new User(username, password);
+                        //声明一个asynctask对象并实例化
+                        OkHttpRequestAsynctask1 okHttpRequest = new OkHttpRequestAsynctask1();
+                        //调用execute方法
+                        okHttpRequest.execute(user);
+                    }
                 } else {
                     Toast.makeText(LoginActivity.this, "请输入账号或密码", Toast.LENGTH_LONG).show();
                 }
 
             }
         });
+
         mLogin_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              Intent intent =new Intent(LoginActivity.this,RegisterActivity.class);
-              startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+
+
+                Log.d("Test1", "here");
+
             }
         });
     }
 
-
-    class OkHttpRequestAsynctask extends AsyncTask<User, Integer, User> {
+    class OkHttpRequestAsynctask1 extends AsyncTask<User, Integer, User> {
         @Override
         protected User doInBackground(User... users) {
             User user = new User();
@@ -104,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                         //.url("http://172.21.187.216:8080/Music/Servlet_1")
                         //服务器url
                         .url("http://10.1.14.15:8080/TestMusic/LoginServlet")
+                        /*  .url("http://192.168.55.15:8080/TestMusic/LoginServlet")*/
                         .post(requestBody)
                         .build();
                 Response response = mclient.newCall(request).execute();
@@ -113,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (str.equals("false")) {
                         return null;
                     }
-                    if (!str.isEmpty()){
+                    if (!str.isEmpty()) {
                         user = gson.fromJson(str, User.class);
                         user.setUsername(users[0].getUsername());
                         user.setPassword(users[0].getPassword());
@@ -139,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("user", user);
                 SPUtils spUtils = new SPUtils(LoginActivity.this);
-                Log.d("hess", "onCreate: "+user.getUsername());
+                Log.d("hess", "onCreate: " + user.getUsername());
                 spUtils.addSP(user.getName(), user.getPassword());
                 spUtils.addSP("lastUser", user);
                 startActivity(intent);
@@ -156,5 +176,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
+
 }
+
 

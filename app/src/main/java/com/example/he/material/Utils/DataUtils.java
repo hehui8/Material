@@ -2,10 +2,8 @@ package com.example.he.material.Utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.StaticLayout;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
 import com.example.he.material.MODLE.Song;
 
 import java.util.ArrayList;

@@ -6,12 +6,10 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.print.PrinterId;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +36,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MusicActivity extends AppCompatActivity {
 
+
     private boolean isplaying = true;//播放标志
     public static String TAG = "MUSIC";
     private ImageView mBack;
@@ -62,10 +61,12 @@ public class MusicActivity extends AppCompatActivity {
     private int clickItem;
     private Toolbar mToolbar;
     private int stateFrom;
-
+    private ImageView mRandom;
+    private static int mode = 0;
 
     @SuppressLint("ResourceType")
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplay);
         if (AndroidWorkaround.checkDeviceHasNavigationBar(this)) {
@@ -83,7 +84,40 @@ public class MusicActivity extends AppCompatActivity {
         tv_total = findViewById(R.id.tv_total);
         mCircleImageView = findViewById(R.id.pricture_img);
         mPricture = findViewById(R.id.geci_text);
+        mRandom = findViewById(R.id.random);
 
+        //默认列表循环
+
+        if (savedInstanceState != null) {
+            mode = savedInstanceState.getInt("MODE");
+        }
+
+        if (mode == 0) {
+            mRandom.setBackground(getDrawable(R.drawable.ic_list_play));
+        } else if (mode == 1) {
+            mRandom.setBackground(getDrawable(R.drawable.ic_only_one));
+        } else if (mode == 2) {
+            mRandom.setBackground(getDrawable(R.drawable.ic_random));
+        }
+
+        mRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mode++;
+                mService.setPlayMode(mode);
+                if (mode % 3 == 0) {
+                    mode = 0;
+                }
+                if (mode == 0) {
+                    mRandom.setBackground(getDrawable(R.drawable.ic_list_play));
+                } else if (mode == 1) {
+                    mRandom.setBackground(getDrawable(R.drawable.ic_only_one));
+                } else if (mode == 2) {
+                    mRandom.setBackground(getDrawable(R.drawable.ic_random));
+                }
+
+            }
+        });
 
         Intent intent = getIntent();
         songList = new ArrayList<>();
@@ -97,6 +131,7 @@ public class MusicActivity extends AppCompatActivity {
                 mService = binder.getService();
                 //可以通过mService调用service中方法
             }
+
             @Override
             public void onServiceDisconnected(ComponentName name) {
             }
@@ -124,6 +159,7 @@ public class MusicActivity extends AppCompatActivity {
                 startService(mIntent);
             }
         }
+
         if (mCircleImageView != null) {
             Glide.with(this).load(R.drawable.default_img).into(mCircleImageView);
         }
@@ -204,8 +240,8 @@ public class MusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (stateFrom == 0) {
-                    if (CurrentPosition < (songList.size() - 1)) {
-                        CurrentPosition--;//如果选择上一首，那么当前播放位置加一
+                    if (CurrentPosition < (songList.size() - 1) && CurrentPosition >= 0) {
+                        CurrentPosition--;//如果选择上一首，那么当前播放位置减一
                         Glide.with(MusicActivity.this)
                                 .load(R.drawable.default_img)
                                 .into(mCircleImageView);
@@ -252,10 +288,11 @@ public class MusicActivity extends AppCompatActivity {
 
     }
 
-    @Override
+
+   /* @Override
     protected void onResume() {
         super.onResume();
-        Intent intent=getIntent();
+        Intent intent = getIntent();
         if (intent.getBundleExtra("data") != null) {
             Bundle mbundle = intent.getBundleExtra("data");
             clickItem = mbundle.getInt("itemId");//点击的位置编号
@@ -277,6 +314,30 @@ public class MusicActivity extends AppCompatActivity {
                 startService(mIntent);
             }
         }
+    }*/
+
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mode = savedInstanceState.getInt("MODE");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mode == 0) {
+            mRandom.setBackground(getDrawable(R.drawable.ic_list_play));
+        } else if (mode == 1) {
+            mRandom.setBackground(getDrawable(R.drawable.ic_only_one));
+        } else if (mode == 2) {
+            mRandom.setBackground(getDrawable(R.drawable.ic_random));
+        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -284,55 +345,21 @@ public class MusicActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Bundle bundle = msg.getData();
-            //歌曲的总时长(毫秒)
-            int duration = bundle.getInt("duration");
-            //歌曲的当前进度(毫秒)
-            int currentPostition = bundle.getInt("currentPosition");
-            //刷新滑块的进度
-            mSeekBar.setMax(duration);
-            mSeekBar.setProgress(currentPostition);
-
-            //歌曲的总时长
-            int minute = duration / 1000 / 60;
-            int second = duration / 1000 % 60;
-            String strMinute = null;
-            String strSecond = null;
-            //如果歌曲的时间中的分钟小于10
-            if (minute < 10) {
-                //在分钟的前面加一个0
-                strMinute = "0" + minute;
-            } else {
-                strMinute = minute + "";
+            switch (msg.what) {
+                case 0:
+                    Bundle bundle = msg.getData();
+                    //歌曲的总时长(毫秒)
+                    int duration = bundle.getInt("duration");
+                    //歌曲的当前进度(毫秒)
+                    int currentPostition = bundle.getInt("currentPosition");
+                    setDuration(duration, currentPostition);
+                    break;
+                case 1:
+                    Bundle bundle1 = msg.getData();
+                    if (bundle1.getString("titlename") != null) {
+                        music_title.setText(bundle1.getString("titlename"));
+                    }
             }
-            //如果歌曲的时间中的秒钟小于10
-            if (second < 10) {
-                //在秒钟前面加一个0
-                strSecond = "0" + second;
-            } else {
-                strSecond = second + "";
-            }
-            tv_total.setText(strMinute + ":" + strSecond);
-
-            //歌曲当前播放时长
-            minute = currentPostition / 1000 / 60;
-            second = currentPostition / 1000 % 60;
-            //如果歌曲的时间中的分钟小于10
-            if (minute < 10) {
-
-                //在分钟的前面加一个0
-                strMinute = "0" + minute;
-            } else {
-                strMinute = minute + "";
-            }
-            //如果歌曲的时间中的秒钟小于10
-            if (second < 10) {
-                //在秒钟前面加一个0
-                strSecond = "0" + second;
-            } else {
-                strSecond = second + "";
-            }
-            tv_progress.setText(strMinute + ":" + strSecond);
 
         }
 
@@ -356,4 +383,57 @@ public class MusicActivity extends AppCompatActivity {
         return music_title;
     }
 
+
+    public static void setDuration(int duration, int currentPosition) {
+        //刷新滑块的进度
+        mSeekBar.setMax(duration);
+        mSeekBar.setProgress(currentPosition);
+
+        //歌曲的总时长
+        int minute = duration / 1000 / 60;
+        int second = duration / 1000 % 60;
+        String strMinute = null;
+        String strSecond = null;
+        //如果歌曲的时间中的分钟小于10
+        if (minute < 10) {
+            //在分钟的前面加一个0
+            strMinute = "0" + minute;
+        } else {
+            strMinute = minute + "";
+        }
+        //如果歌曲的时间中的秒钟小于10
+        if (second < 10) {
+            //在秒钟前面加一个0
+            strSecond = "0" + second;
+        } else {
+            strSecond = second + "";
+        }
+        tv_total.setText(strMinute + ":" + strSecond);
+
+        //歌曲当前播放时长
+        minute = currentPosition / 1000 / 60;
+        second = currentPosition / 1000 % 60;
+        //如果歌曲的时间中的分钟小于10
+        if (minute < 10) {
+
+            //在分钟的前面加一个0
+            strMinute = "0" + minute;
+        } else {
+            strMinute = minute + "";
+        }
+        //如果歌曲的时间中的秒钟小于10
+        if (second < 10) {
+            //在秒钟前面加一个0
+            strSecond = "0" + second;
+        } else {
+            strSecond = second + "";
+        }
+        tv_progress.setText(strMinute + ":" + strSecond);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("MODE", mode);
+    }
 }

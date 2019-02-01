@@ -1,10 +1,7 @@
 package com.example.he.material.Fragment_List;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.example.he.material.Activity.MusicActivity;
 import com.example.he.material.Adapter.MusicAdapter;
@@ -25,37 +21,38 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressLint("ValidFragment")
+
 public class LocalMusicFragment extends Fragment {
     private static List<Song> addressList;
 
     private RecyclerView recyclerView;
-    private LinearLayout linearLayout;
-    private Context context;
+
     public static Intent intent;
     private MusicAdapter adapter;
 
-    private Handler mhandle = new Handler();
-    private int REFRESH_UI = 100;
+    public static LocalMusicFragment newInstance(List<Song> addressList) {
+        LocalMusicFragment newFragment = new LocalMusicFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("list", (Serializable) addressList);
+        newFragment.setArguments(bundle);
+        return newFragment;
 
-    public LocalMusicFragment(List<Song> addressList, Context context) {
-        this.addressList = addressList;
-        this.context = context;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.local_fragment, container, false);
         recyclerView = view.findViewById(R.id.recycler_view);
-
         //配置布局管理器
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        addressList = (List<Song>) getArguments().getSerializable("list");
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         //item的滑动效果
-        ItemTouchHelper.Callback mCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
+        ItemTouchHelper.Callback mCallback =
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
             /**
              * @param recyclerView
              * @param viewHolder 拖动的ViewHolder
@@ -63,7 +60,8 @@ public class LocalMusicFragment extends Fragment {
              * @return
              */
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
                 int fromPosition = viewHolder.getAdapterPosition();//得到拖动ViewHolder的position
                 int toPosition = target.getAdapterPosition();//得到目标ViewHolder的position
                 if (fromPosition < toPosition) {
@@ -94,7 +92,7 @@ public class LocalMusicFragment extends Fragment {
                 Intent intent = new Intent();
                 intent.setAction("Adapter.is.changer");
                 Log.d("guangbo", "fasong");
-                context.sendBroadcast(intent);
+                getContext().sendBroadcast(intent);
 
 
             }
@@ -107,13 +105,14 @@ public class LocalMusicFragment extends Fragment {
 
             @Override
             public void onClick(int position) {
-                Intent intent1 = new Intent(context, MusicActivity.class);
+                Intent intent1 = new Intent(getContext(), MusicActivity.class);
                 Bundle data = new Bundle();
                 data.putInt("itemId", position);
                 data.putSerializable("music", (Serializable) addressList);
                 intent1.putExtra("data", data);
                 startActivity(intent1);
             }
+
             @Override
             public void onLongClick(int position) {
             }

@@ -46,10 +46,16 @@ public class InternetFragment extends Fragment {
     private static List<Song> InternetList;
 
 
-    public InternetFragment(List<Song> addressList, Context context) {
-        InternetList = addressList;
-        this.context = context;
+
+    public static InternetFragment newInstance(List<Song> addressList) {
+        InternetFragment newFragment = new InternetFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("list", (Serializable) addressList);
+        newFragment.setArguments(bundle);
+        return newFragment;
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,10 +66,10 @@ public class InternetFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_address);
 
         //配置布局管理器
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        InternetList= (List<Song>) getArguments().getSerializable("list");
         /**
          *    构造适配器时传入一个数据数组和一个监听接口并重写其点击事件方法
          */
@@ -81,7 +87,7 @@ public class InternetFragment extends Fragment {
 
             @Override
             public void onClick(int position) {
-                Intent intent1 = new Intent(context, MusicActivity.class);
+                Intent intent1 = new Intent(getContext(), MusicActivity.class);
                 Bundle data = new Bundle();
                 data.putInt("itemId", position);
                 data.putSerializable("music", (Serializable) InternetList);

@@ -1,19 +1,15 @@
 package com.example.he.material.Fragment_List;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.he.material.Activity.MusicActivity;
 import com.example.he.material.Activity.NewRecentSearchActivity;
@@ -21,21 +17,10 @@ import com.example.he.material.Adapter.SearchRecentAdapter;
 import com.example.he.material.Adapter.SearchResultAdapter;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 
 public class SearchResultFragment extends Fragment {
@@ -44,6 +29,7 @@ public class SearchResultFragment extends Fragment {
     private ArrayList<Song> searchresult;
     private SearchResultAdapter adapter;
     private View mEmpty;
+    private List<Song> songList = new ArrayList<>();
 
 
     public static SearchResultFragment newInstance() {
@@ -88,17 +74,15 @@ public class SearchResultFragment extends Fragment {
                 public void onClick(int position) {
                     if (position >= 0) {
                         Song song = searchresult.get(position);
-                        String string = song.getPath();
-                        if (!string.isEmpty()){
+                        songList.add(song);
+                        if (!songList.isEmpty() && songList != null) {
                             Intent resultIntent = new Intent(getContext(), MusicActivity.class);
-                            resultIntent.putExtra("from", "result");
-                            Bundle bundle=new Bundle();
-                            bundle.putString("pathUrl", string);
-                            bundle.putString("Title",song.getSongName());
-                            resultIntent.putExtra("clickResult",bundle);
+                            Bundle data = new Bundle();
+                            data.putInt("itemId", position);
+                            data.putSerializable("music", (Serializable) songList);
+                            resultIntent.putExtra("data", data);
                             startActivity(resultIntent);
-                        }
-                        else{
+                        } else {
                             //无url处理
                         }
                     }
@@ -133,13 +117,13 @@ public class SearchResultFragment extends Fragment {
 
 
     public void setEmpty(boolean visable) {
-        if(visable) {
+        if (visable) {
             if (mEmpty != null) {
                 mEmpty.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.INVISIBLE);
             }
-        }else {
-            if(mEmpty != null) {
+        } else {
+            if (mEmpty != null) {
                 mEmpty.setVisibility(View.INVISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
             }

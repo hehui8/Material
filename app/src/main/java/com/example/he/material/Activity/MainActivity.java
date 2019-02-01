@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,8 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.he.material.Adapter.MyFragmentAdapter;
+import com.example.he.material.Controler.Utils;
 import com.example.he.material.Fragment_List.InternetFragment;
-import com.example.he.material.MODLE.GEDAN.Root;
+import com.example.he.material.Fragment_List.LocalMusicFragment;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.MODLE.User;
 import com.example.he.material.R;
@@ -40,6 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -82,9 +84,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (AndroidWorkaround.checkDeviceHasNavigationBar(this)) {
             AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
         }
+        if (savedInstanceState != null) {
+            if (((List<Song>) savedInstanceState.getSerializable("online")) != null && !((List<Song>) savedInstanceState.getSerializable("online")).isEmpty()) {
+                musicInternetList = (List<Song>) savedInstanceState.getSerializable("online");
+            }
+        }
+
+
 
         mToolbar_title = this.findViewById(R.id.toolbar_title);
         tab1 = this.findViewById(R.id.txt_1);
@@ -116,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("hess", "onCreate: " + strRequestCloudmusic);
                     musicInternetList.clear();
                     musicInternetList.addAll(temp);
-                    i1 = new InternetFragment(musicInternetList, MainActivity.this);
+                    i1=InternetFragment.newInstance(musicInternetList);
                     mFragmentList.add(i1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -130,8 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-
-        s1 = new LocalMusicFragment(musicList, MainActivity.this);
+        s1=LocalMusicFragment.newInstance(musicList);
         mFragmentList.add(0, s1);
 
         //实现toolbar的导航栏点击功能
@@ -162,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 if (FLAG == 0) {
                     Intent intent1 = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivityForResult(intent1, 100);
+                    startActivity(intent1);
                 }
             }
         });
@@ -261,31 +270,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void sendRequest(final String id) throws InterruptedException {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    OkHttpClient client = new OkHttpClient.Builder().build();
-                    String json = "{\"TransCode\":\"020111\",\"OpenId\":\"TEST\",\"Body\":{\"SongListId\":" + id + "}}";
-                    RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json);
-                    Request request = new Request.Builder()
-                            .url("https://api.hibai.cn/api/index/index")
-                            .post(requestBody)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    strRequestCloudmusic = response.body().string();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        thread.start();
-        thread.join();
-        //join方法作用是父线程等待子线程任务处理完毕
-    }
-
     public void sendRequest() {
         Thread thread = new Thread() {
             @Override
@@ -315,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putSerializable("online", (Serializable) musicInternetList);
     }
 
     @Override

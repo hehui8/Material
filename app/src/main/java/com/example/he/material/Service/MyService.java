@@ -22,12 +22,14 @@ import java.util.TimerTask;
 
 public class
 MyService extends Service {
+    //0为列表循环，1为单曲，2为随机
+    public static int TYPE_PLAY_MODE = 0;
 
-    private static int clickPositionSecond = -1;
-    public MyBinder mMyBinder = new MyBinder();
     private static MediaPlayer mPlayer;
+    private static int currentClick = -1;
+    public MyBinder mMyBinder = new MyBinder();
     private Timer timer;
-    private static List<Song> SongList;
+    private List<Song> SongList;
     private static int ClickPosition;//当前lcoal点击的选项标号
     private int State = 0;
 
@@ -47,29 +49,18 @@ MyService extends Service {
         }
         SongList = (List<Song>) intent.getSerializableExtra("music");
         ClickPosition = intent.getIntExtra("position", -1);
-        //clickPositionSecond ===当前播放位置
+        //currentClick ===当前播放位置
         if (SongList != null && !SongList.isEmpty()) {
-            if ((clickPositionSecond == -1) || (clickPositionSecond != ClickPosition)) {
-                clickPositionSecond = ClickPosition;
+            if ((currentClick == -1) || (currentClick != ClickPosition)) {
+                currentClick = ClickPosition;
                 State = 0;
-                initplay(SongList.get(clickPositionSecond).getPath());
-            }
-        } else if (intent.getStringExtra("urlpath") != null) {
-            String urlPath = intent.getStringExtra("urlpath");
-            if (urlPath != null && !urlPath.isEmpty()) {
-                State = 1;
-                initplay(urlPath);
+                initplay(SongList.get(currentClick).getPath());
             }
         }
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (State == 0) {
-                    next();
-                } else {
-                    mPlayer.reset();
-                    mPlayer = null;
-                }
+                next();
             }
         });
         return super.onStartCommand(intent, flags, startId);
@@ -82,6 +73,7 @@ MyService extends Service {
         mPlayer.stop();
         mPlayer.release();
         mPlayer = null;
+
     }
 
     @Override
@@ -108,7 +100,7 @@ MyService extends Service {
 
             if (mPlayer != null && mPlayer.isPlaying()) {
                 mPlayer.pause();
-                clickPositionSecond = -1;
+                currentClick = -1;
             }
         }
 
@@ -164,6 +156,7 @@ MyService extends Service {
                         currentPosition = mPlayer.getCurrentPosition();
                         //创建消息对象
                         Message msg = MusicActivity.handler.obtainMessage();
+                        msg.what=0;
                         //将音乐的播放进度封装至消息对象中
                         Bundle bundle = new Bundle();
                         bundle.putInt("duration", duration);
@@ -195,20 +188,51 @@ MyService extends Service {
 
 
     public void next() {
-
+        String titleName=null;
         ClickPosition++;
         timer.cancel();
         try {
             //重置
             mPlayer.reset();
             //加载多媒体文件
+
             if (ClickPosition < SongList.size()) {
-                mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
+                if (TYPE_PLAY_MODE == 0) {
+                    mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
+                    titleName=SongList.get(ClickPosition).getSongName();
+                } else if (TYPE_PLAY_MODE == 1) {
+                    ClickPosition--;
+                    mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
+                    titleName=SongList.get(ClickPosition).getSongName();
+                } else if (TYPE_PLAY_MODE == 2) {
+                    int index = (int) (Math.random() * SongList.size());
+                    mPlayer.setDataSource(SongList.get(index).getPath());
+                    titleName=SongList.get(index).getSongName();
+                    if(index<SongList.size()){
+                        ClickPosition=index;
+                    }
+                }
                 //准备播放音乐
-                mPlayer.prepare();
+                try{
+                    mPlayer.prepareAsync();
+                    mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer) {
+                            mPlayer.start();
+                            addTimer();
+                        }
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 //播放音乐
-                mPlayer.start();
-                addTimer();
+                Message msg = MusicActivity.handler.obtainMessage();
+                msg.what=1;
+                Bundle bundle =new Bundle();
+                bundle.putString("titlename",titleName);
+                msg.setData(bundle);
+                MusicActivity.handler.sendMessage(msg);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -221,23 +245,24 @@ MyService extends Service {
         ClickPosition--;
         timer.cancel();
         mPlayer.reset();
-
-        if (State == 0) {
-            if (ClickPosition >= 0) {
-                initByPosition1(ClickPosition);
-            }
-        } else {
-            if (ClickPosition > 0) {
-                initByPosition2(ClickPosition);
-            }
+        if (ClickPosition >= 0) {
+            initByPosition(ClickPosition);
         }
     }
 
-    public void initByPosition1(int position) {
+    public void initByPosition(int position) {
         try {
 
             mPlayer.reset();
-            mPlayer.setDataSource(SongList.get(position).getPath());
+            if (TYPE_PLAY_MODE == 1) {
+                position++;
+                mPlayer.setDataSource(SongList.get(position).getPath());
+            } else if (TYPE_PLAY_MODE == 0) {
+                mPlayer.setDataSource(SongList.get(position).getPath());
+            } else if (TYPE_PLAY_MODE == 2) {
+                int index = (int) (Math.random() * SongList.size());
+                mPlayer.setDataSource(SongList.get(index).getPath());
+            }
             mPlayer.prepareAsync();
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -251,21 +276,8 @@ MyService extends Service {
         }
     }
 
-    public void initByPosition2(int position) {
-        try {
-            mPlayer.reset();
-            mPlayer.setDataSource(SongList.get(position).getPath());
-            mPlayer.prepareAsync();
-            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mPlayer.start();
-                    addTimer();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void setPlayMode(int mode){
+        TYPE_PLAY_MODE=mode;
     }
 
     public void updateList(List<Song> updatelist) {
@@ -276,5 +288,6 @@ MyService extends Service {
             }
         }
     }
+
 
 }

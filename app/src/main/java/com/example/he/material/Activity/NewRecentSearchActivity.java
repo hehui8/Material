@@ -24,19 +24,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.he.material.Adapter.SearchRecentAdapter;
 import com.example.he.material.Fragment_List.SearchRecentFragment;
 import com.example.he.material.Fragment_List.SearchResultFragment;
 import com.example.he.material.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -44,9 +40,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 import static com.example.he.material.Utils.DataUtils.hideKeyboard;
-import static com.example.he.material.Utils.DataUtils.hideSoftKeyboard;
 import static com.example.he.material.Utils.DataUtils.putData;
 
 /**
