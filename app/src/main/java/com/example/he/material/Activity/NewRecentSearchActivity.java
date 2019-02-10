@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 
 import com.example.he.material.MODLE.Song;
+import com.example.he.material.Utils.AndroidWorkaround;
 import com.example.he.material.Utils.DataUtils;
 
 import android.text.TextUtils;
@@ -79,7 +80,9 @@ public class NewRecentSearchActivity extends AppCompatActivity {
 
         }
         setContentView(R.layout.activity_search_new);
-
+        if (AndroidWorkaround.checkDeviceHasNavigationBar(this)) {
+            AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
+        }
         mFocusView = findViewById(R.id.focus_view);
         searchInitView();
         showRecentFragment();

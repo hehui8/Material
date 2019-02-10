@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
+import com.example.he.material.Utils.AndroidWorkaround;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class MusicActivity extends AppCompatActivity {
     private ObjectAnimator animator;
     private ViewPager mViewPager;
     //music对象属性
-
+    private static List<Song> songListLastTime;
     private List<Song> songList;
     private int clickItem;
     private Toolbar mToolbar;
@@ -67,7 +68,9 @@ public class MusicActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplay);
-
+        if (AndroidWorkaround.checkDeviceHasNavigationBar(this)) {
+            AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         music_title = findViewById(R.id.music_title);
@@ -82,11 +85,24 @@ public class MusicActivity extends AppCompatActivity {
         mPricture = findViewById(R.id.geci_text);
 
 
-
         Intent intent = getIntent();
         songList = new ArrayList<>();
         mIntent = new Intent(this, MyService.class);
         //接受从fragment传送过来的bundle（点击的位置）和music集合
+
+        mConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MyService.MyBinder binder = (MyService.MyBinder) service;
+                mService = binder.getService();
+                //可以通过mService调用service中方法
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+            }
+        };
+        //绑定服务
+        bindService(mIntent, mConn, Service.BIND_AUTO_CREATE);
         if (intent.getBundleExtra("data") != null) {
             Bundle mbundle = intent.getBundleExtra("data");
             clickItem = mbundle.getInt("itemId");//点击的位置编号
@@ -99,55 +115,23 @@ public class MusicActivity extends AppCompatActivity {
             if (music_title != null) {
                 music_title.setText(songList.get(CurrentPosition).getSongName());
             }
-        }
-        //将搜索数据传给service
-
-        else if (intent.getBundleExtra("clickResult") != null) {
+        } else if (intent.getBundleExtra("clickResult") != null) {
             Bundle bundle = intent.getBundleExtra("clickResult");
             String url = bundle.getString("pathUrl");
             if (url != null && !url.isEmpty()) {
                 music_title.setText(bundle.getString("Title"));
-                mIntent.putExtra("urlpath",url);
+                mIntent.putExtra("urlpath", url);
                 startService(mIntent);
             }
         }
-
-
         if (mCircleImageView != null) {
             Glide.with(this).load(R.drawable.default_img).into(mCircleImageView);
         }
-        //与服务器端交互的接口方法 绑定服务的时候被回调，在这个方法获取绑定Service传递过来的IBinder对象，
-        //通过这个IBinder对象，实现activity和Service的交互。
-        mConn = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MyService.MyBinder binder = (MyService.MyBinder) service;
-                mService = binder.getService();
-                //可以通过mService调用service中方法
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-            }
-        }
-
-        ;
-
-        //绑定服务
-        bindService(mIntent, mConn, Service.BIND_AUTO_CREATE);
-
         //动画
         initanimator();
-
         //当从主activity切换至musicactivity时，歌曲自动开始播放，动画开始
         animator.start();
-        mplay.setBackground(
-
-                getResources().
-
-                        getDrawable(R.drawable.ic_pause));
-
-
+        mplay.setBackground(getResources().getDrawable(R.drawable.ic_pause));
         //为播放键设置点击监听事件
         mplay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -268,6 +252,32 @@ public class MusicActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent=getIntent();
+        if (intent.getBundleExtra("data") != null) {
+            Bundle mbundle = intent.getBundleExtra("data");
+            clickItem = mbundle.getInt("itemId");//点击的位置编号
+            CurrentPosition = clickItem;//当前播放位置等于点击位置
+            songList = (List<Song>) mbundle.getSerializable("music");
+            //传给service
+            mIntent.putExtra("position", clickItem);
+            mIntent.putExtra("music", (Serializable) songList);
+            startService(mIntent);
+            if (music_title != null) {
+                music_title.setText(songList.get(CurrentPosition).getSongName());
+            }
+        } else if (intent.getBundleExtra("clickResult") != null) {
+            Bundle bundle = intent.getBundleExtra("clickResult");
+            String url = bundle.getString("pathUrl");
+            if (url != null && !url.isEmpty()) {
+                music_title.setText(bundle.getString("Title"));
+                mIntent.putExtra("urlpath", url);
+                startService(mIntent);
+            }
+        }
+    }
 
     @SuppressLint("HandlerLeak")
     public static Handler handler = new Handler() {

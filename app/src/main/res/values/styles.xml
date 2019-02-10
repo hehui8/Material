@@ -25,4 +25,7 @@
         <item name="android:scaleType">fitXY</item>
         <item name="android:src">#e0e0e0</item>
     </style>
+
+    <style name="AppTheme5" parent="android:Theme.Material">
+    </style>
 </resources>

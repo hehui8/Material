@@ -11,7 +11,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity
+            android:name=".Activity.LaunchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppLauncher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Activity.MainActivity">
 
         </activity>
@@ -27,31 +35,18 @@
         <activity android:name=".Activity.LoginActivity">
 
         </activity>
-        <activity android:name=".Activity.LaunchActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppLauncher">
+        <activity android:name=".Activity.RegisterActivity"></activity>
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-
-            </intent-filter>
-        </activity>
-
-
-
-        <service android:name="com.example.he.material.Service.MyService">
-        </service>
+        <service android:name="com.example.he.material.Service.MyService"></service>
 
         <receiver android:name=".Service.MyService$RecycleViewBrodcast">
             <intent-filter>
-                <action android:name="Adapter.is.changer">
-                </action>
+                <action android:name="Adapter.is.changer"></action>
             </intent-filter>
         </receiver>
     </application>
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name = "android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

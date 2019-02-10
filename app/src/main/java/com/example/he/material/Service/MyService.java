@@ -27,7 +27,7 @@ MyService extends Service {
     public MyBinder mMyBinder = new MyBinder();
     private static MediaPlayer mPlayer;
     private Timer timer;
-    private List<Song> SongList;
+    private static List<Song> SongList;
     private static int ClickPosition;//当前lcoal点击的选项标号
     private int State = 0;
 
@@ -38,6 +38,13 @@ MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(SongList!=null && !SongList.isEmpty()){
+            SongList.clear();
+            if(mPlayer.isPlaying()){
+                mPlayer.stop();
+                mPlayer.reset();
+            }
+        }
         SongList = (List<Song>) intent.getSerializableExtra("music");
         ClickPosition = intent.getIntExtra("position", -1);
         //clickPositionSecond ===当前播放位置
@@ -76,7 +83,6 @@ MyService extends Service {
         mPlayer.release();
         mPlayer = null;
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -259,6 +265,15 @@ MyService extends Service {
             });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void updateList(List<Song> updatelist) {
+        if (updatelist != null && !updatelist.isEmpty()) {
+            if (SongList != null && !SongList.isEmpty()) {
+                SongList.clear();
+                SongList.addAll(updatelist);
+            }
         }
     }
 
