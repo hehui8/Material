@@ -30,11 +30,10 @@ import com.example.he.material.Adapter.MyFragmentAdapter;
 import com.example.he.material.Controler.Utils;
 import com.example.he.material.Fragment_List.InternetFragment;
 import com.example.he.material.Fragment_List.LocalMusicFragment;
+import com.example.he.material.Fragment_List.MainFragment;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.MODLE.User;
 import com.example.he.material.R;
-import com.example.he.material.Fragment_List.LocalMusicFragment;
-import com.example.he.material.Controler.Utils;
 import com.example.he.material.Utils.AndroidWorkaround;
 import com.example.he.material.Utils.SPUtils;
 import com.google.gson.Gson;
@@ -57,6 +56,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView tab0;
     private TextView tab1;
     private TextView tab2;
     private TextView tab3;
@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static int FLAG = 0; //登陆状态，默认为0（未登录）
     private static String strRequestCloudmusic;//该变量接受api接口返回的json字符串
     private long exitTime = 0;
+    private MainFragment mainFragment;
+
 
     @Override
 
@@ -95,8 +97,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
-
+        mainFragment = new MainFragment();
+        mFragmentList.add(0, mainFragment);
         mToolbar_title = this.findViewById(R.id.toolbar_title);
+        tab0 = this.findViewById(R.id.txt_0);
         tab1 = this.findViewById(R.id.txt_1);
         tab2 = this.findViewById(R.id.txt_2);
         tab3 = this.findViewById(R.id.txt_3);
@@ -126,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("hess", "onCreate: " + strRequestCloudmusic);
                     musicInternetList.clear();
                     musicInternetList.addAll(temp);
-                    i1=InternetFragment.newInstance(musicInternetList);
+                    i1 = InternetFragment.newInstance(musicInternetList);
                     mFragmentList.add(i1);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -140,14 +144,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-        s1=LocalMusicFragment.newInstance(musicList);
-        mFragmentList.add(0, s1);
+        s1 = LocalMusicFragment.newInstance(musicList);
+        mFragmentList.add(1, s1);
 
         //实现toolbar的导航栏点击功能
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mytoolbar, R.string
                 .drawer_layout_open, R.string.drawer_layout_close);
         //将fragmentList绑定到viewpager
         viewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager(), mFragmentList));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch(position){
+                    case 0:
+                        selectImg(tab0);
+                        break;
+                    case 1:
+                        selectImg(tab1);
+                        break;
+                    case 2:
+                        selectImg(tab2);
+                        break;
+                    case 3:
+                        selectImg(tab3);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
 
@@ -225,11 +258,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         });
+        tab0.setOnClickListener(this);
         tab1.setOnClickListener(this);
         tab2.setOnClickListener(this);
         tab3.setOnClickListener(this);
         mImageView_search.setOnClickListener(this);
-
     }
 
     @Override
@@ -237,24 +270,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         Drawable drawable = null;
         switch (v.getId()) {
-            case R.id.txt_1:
-                mToolbar_title.setText(R.string.local);
+            case R.id.txt_0:
                 selectImg(v);
-                viewPager.setCurrentItem(0, true);
+                viewPager.setCurrentItem(0);
+                break;
+            case R.id.txt_1:
+                selectImg(v);
+                viewPager.setCurrentItem(1, true);
                 break;
             case R.id.txt_2:
-                mToolbar_title.setText(R.string.internet);
                 if (FLAG == 1) {
                     selectImg(v);
-                    viewPager.setCurrentItem(1, true);
+                    viewPager.setCurrentItem(2, true);
                 } else {
                     Toast.makeText(MainActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.txt_3:
-                mToolbar_title.setText(R.string.favourite);
                 selectImg(v);
-                viewPager.setCurrentItem(2, true);
+                viewPager.setCurrentItem(3, true);
             case R.id.search:
                 if (/*FLAG == 1*/true) {
                   /*  Intent intent = new Intent(MainActivity.this, SearchActivity.class);
@@ -334,12 +368,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void selectImg(View v) {
         if (v != null) {
-            if (v.getId() == R.id.txt_1) {
+            if (v.getId() == R.id.txt_0) {
+                mToolbar_title.setText(R.string.home);
                 Drawable drawable = getDrawable(R.drawable.ic_music_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab0.setCompoundDrawables(null, drawable, null, null);
+                    tab0.setTextColor(getResources().getColor(R.color.tab_icon_select));
+                }
+                drawable = getDrawable(R.drawable.ic_music_default);
+                if (drawable != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab1.setCompoundDrawables(null, drawable, null, null);
-                    tab1.setTextColor(getResources().getColor(R.color.tab_icon_select));
+                    tab1.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
                 drawable = getDrawable(R.drawable.ic_in_default);
                 if (drawable != null && tab2 != null) {
@@ -354,8 +395,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tab3.setCompoundDrawables(null, drawable, null, null);
                     tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
+            } else if (v.getId() == R.id.txt_1) {
+                mToolbar_title.setText(R.string.local);
+                Drawable drawable = getDrawable(R.drawable.ic_music_default);
+                if (drawable != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab0.setCompoundDrawables(null, drawable, null, null);
+                    tab0.setTextColor(getResources().getColor(R.color.tab_icon_default));
+                }
+
+                drawable = getDrawable(R.drawable.ic_music_select);
+                if (drawable != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab1.setCompoundDrawables(null, drawable, null, null);
+                    tab1.setTextColor(getResources().getColor(R.color.tab_icon_select));
+                }
+                drawable = getDrawable(R.drawable.ic_in_default);
+                if (drawable != null && tab2 != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab2.setCompoundDrawables(null, drawable, null, null);
+                    tab2.setTextColor(getResources().getColor(R.color.tab_icon_default));
+                }
+                drawable = getDrawable(R.drawable.user_default);
+                if (drawable != null && tab3 != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab3.setCompoundDrawables(null, drawable, null, null);
+                    tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
+                }
 
             } else if (v.getId() == R.id.txt_2) {
+                mToolbar_title.setText(R.string.internet);
                 Drawable drawable = getDrawable(R.drawable.ic_in_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
@@ -367,7 +436,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab1.setCompoundDrawables(null, drawable, null, null);
                     tab1.setTextColor(getResources().getColor(R.color.tab_icon_default));
-
+                }
+                drawable = getDrawable(R.drawable.ic_music_default);
+                if (drawable != null && tab2 != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab0.setCompoundDrawables(null, drawable, null, null);
+                    tab0.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
                 drawable = getDrawable(R.drawable.user_default);
                 if (drawable != null && tab3 != null) {
@@ -376,6 +450,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tab3.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
             } else {
+                mToolbar_title.setText(R.string.favourite);
                 Drawable drawable = getDrawable(R.drawable.user_select);
                 if (drawable != null) {
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
@@ -394,6 +469,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     tab1.setCompoundDrawables(null, drawable, null, null);
                     tab1.setTextColor(getResources().getColor(R.color.tab_default));
+                }
+                drawable = getDrawable(R.drawable.ic_music_default);
+                if (drawable != null && tab2 != null) {
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    tab0.setCompoundDrawables(null, drawable, null, null);
+                    tab0.setTextColor(getResources().getColor(R.color.tab_icon_default));
                 }
             }
 

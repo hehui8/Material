@@ -19,6 +19,10 @@ android {
     }
     buildToolsVersion '28.0.2'
 }
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.0'
+    }}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -35,5 +39,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'org.kie.modules:com-google-code-gson:6.5.0.Final'
     implementation 'com.mpatric:mp3agic:0.9.1'
-    implementation 'com.alibaba.android:ultraviewpager:1.0.7.8'
+    implementation 'com.youth.banner:banner:1.4.10'
+    implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:2.0.24'
 }

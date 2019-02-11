@@ -51,28 +51,11 @@ public class LaunchActivity extends Activity {
         }
         SPUtils spUtils = new SPUtils(this);
         String getFromSP = spUtils.getSP("lastUser");
-        if (getFromSP != null && !getFromSP.isEmpty()) {
-            Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-            Gson gson = new Gson();
-            User user = new User();
-            user = gson.fromJson(getFromSP, User.class);
-            intent.putExtra("user", user);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }
-
-        Preferences preferences=new Preferences(this);
-        User user = preferences.read("LASTUSER");
-        //上次登录的用户的用户名
-        lastName=user.getUsername();
-
         Thread myThread = new Thread() {
             @Override
             public void run() {
                 try {
-                    sleep(2000);
+                    sleep(1500);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -80,7 +63,24 @@ public class LaunchActivity extends Activity {
             }
         };
         myThread.start();
+        if (getFromSP != null && !getFromSP.isEmpty()) {
+            Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+            Gson gson = new Gson();
+            User user = new User();
+            user = gson.fromJson(getFromSP, User.class);
+            intent.putExtra("user", user);
+            startActivity(intent);
+            finish();
+        } else {
+            Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
+        Preferences preferences=new Preferences(this);
+        User user = preferences.read("LASTUSER");
+        //上次登录的用户的用户名
+        lastName=user.getUsername();
 
     }
 

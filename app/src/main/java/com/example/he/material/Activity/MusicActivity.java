@@ -42,6 +42,7 @@ public class MusicActivity extends AppCompatActivity {
     private ImageView mBack;
     private ImageView mplay;
     private ImageView mnext;
+    private ImageView mLove;
     private static SeekBar mSeekBar;
     private static TextView tv_progress;
     private static TextView tv_total;
@@ -79,6 +80,7 @@ public class MusicActivity extends AppCompatActivity {
         mBack = findViewById(R.id.back);
         mplay = findViewById(R.id.play);
         mnext = findViewById(R.id.next);
+        mLove=findViewById(R.id.love);
         mSeekBar = findViewById(R.id.sb);
         tv_progress = findViewById(R.id.tv_progress);
         tv_total = findViewById(R.id.tv_total);

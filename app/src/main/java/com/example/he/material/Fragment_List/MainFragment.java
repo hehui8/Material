@@ -1,21 +1,26 @@
 package com.example.he.material.Fragment_List;
 
-import android.graphics.Color;
+
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.he.material.R;
-import com.tmall.ultraviewpager.UltraViewPager;
+import com.example.he.material.Utils.GlideImageLoader;
+import com.youth.banner.Banner;
+import com.youth.banner.Transformer;
+import com.youth.banner.listener.OnBannerListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * project: Material
@@ -35,13 +40,13 @@ public class MainFragment extends Fragment {
 
     }
 
-    private UltraViewPager mUltraViewPager;
     private TextView mPersonTv;
     private TextView mDailyTv;
     private TextView mPaiHangTv;
     private ImageView mPersonImg;
     private ImageView mDailyImg;
     private ImageView PaiHangImg;
+    private Banner banner;
 
 
     @Nullable
@@ -53,34 +58,39 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
-      /*  mUltraViewPager.setScrollMode(UltraViewPager.ScrollMode.HORIZONTAL);
-
-        mUltraViewPager.setAdapter(adapter);
-
-
-        mUltraViewPager.initIndicator();
-        //设置indicator样式
-        mUltraViewPager.getIndicator()
-                .setOrientation(UltraViewPager.Orientation.HORIZONTAL)
-                .setFocusColor(Color.GREEN)
-                .setNormalColor(Color.WHITE)
-                .setRadius((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources()
-                        .getDisplayMetrics()));
-        //设置indicator对齐方式
-        mUltraViewPager.getIndicator().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-        //构造indicator,绑定到UltraViewPager
-        mUltraViewPager.getIndicator().build();
-
-        //设定页面循环播放
-        mUltraViewPager.setInfiniteLoop(true);
-        //设定页面自动切换  间隔2秒
-        mUltraViewPager.setAutoScroll(2000);*/
         super.onViewCreated(view, savedInstanceState);
+
+        List<Drawable> images =new ArrayList<>();
+        images.add(getResources().getDrawable(R.drawable.caomei));
+        images.add(getResources().getDrawable(R.drawable.chengzi));
+        images.add(getResources().getDrawable(R.drawable.xiangjiao));
+
+        banner = (Banner) view.findViewById(R.id.banner);
+        //设置图片加载器
+        banner.setImageLoader(new GlideImageLoader());
+        //设置图片集合
+        banner.setImages(images);
+        banner.setDelayTime(4500);
+        banner.setBannerAnimation(Transformer.ScaleInOut);
+        banner.setOnBannerListener(new OnBannerListener() {
+            @Override
+            public void OnBannerClick(int position) {
+                Toast.makeText(getContext(),"第"+position+"个",Toast.LENGTH_SHORT).show();
+            }
+        });
+        //banner设置方法全部调用完毕时最后调用
+        banner.start();
+
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        banner.stopAutoPlay();
     }
 }
