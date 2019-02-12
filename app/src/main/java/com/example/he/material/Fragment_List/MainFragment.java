@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.he.material.Adapter.MainAdapter;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Utils.GlideImageLoader;
 import com.youth.banner.Banner;
@@ -40,14 +45,9 @@ public class MainFragment extends Fragment {
 
     }
 
-    private TextView mPersonTv;
-    private TextView mDailyTv;
-    private TextView mPaiHangTv;
-    private ImageView mPersonImg;
-    private ImageView mDailyImg;
-    private ImageView PaiHangImg;
     private Banner banner;
-
+    private RecyclerView mList;
+    private MainAdapter mainAdapter;
 
     @Nullable
     @Override
@@ -64,8 +64,17 @@ public class MainFragment extends Fragment {
         images.add(getResources().getDrawable(R.drawable.caomei));
         images.add(getResources().getDrawable(R.drawable.chengzi));
         images.add(getResources().getDrawable(R.drawable.xiangjiao));
-
+        mList=view.findViewById(R.id.main_recycler);
         banner = (Banner) view.findViewById(R.id.banner);
+        List<Song> songs=new ArrayList<>();
+        for(int i=0;i<10;i++){
+            Song song =new Song();
+            song.setSongName("zs1111");
+        }
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
+        mainAdapter=new MainAdapter(songs,getContext());
+        mList.setLayoutManager(layoutManager);
+        mList.setAdapter(mainAdapter);
         //设置图片加载器
         banner.setImageLoader(new GlideImageLoader());
         //设置图片集合
@@ -80,6 +89,10 @@ public class MainFragment extends Fragment {
         });
         //banner设置方法全部调用完毕时最后调用
         banner.start();
+
+
+
+
 
     }
 

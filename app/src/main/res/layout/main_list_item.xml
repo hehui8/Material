@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+
+    <com.example.he.material.UI.RoundImageView
+        android:id="@+id/main_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/start_background"
+        app:radius="3dp"
+        app:type="round" />
+
+    <TextView
+        android:id="@+id/main_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_image"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:textSize="15sp"
+        android:maxWidth="150dp"
+        android:maxLines="1"
+        tools:text="dhfkljhafkhasdkfjhakjsfh" />
+
+</RelativeLayout>
