@@ -67,9 +67,10 @@ public class MainFragment extends Fragment {
         mList=view.findViewById(R.id.main_recycler);
         banner = (Banner) view.findViewById(R.id.banner);
         List<Song> songs=new ArrayList<>();
-        for(int i=0;i<10;i++){
+        for(int i=0;i<30;i++){
             Song song =new Song();
             song.setSongName("zs1111");
+            songs.add(song);
         }
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         mainAdapter=new MainAdapter(songs,getContext());

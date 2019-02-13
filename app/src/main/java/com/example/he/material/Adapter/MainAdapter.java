@@ -56,6 +56,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
 
     @Override
     public int getItemCount() {
+        if(mMusicList!=null && !mMusicList.isEmpty()){
+            return mMusicList.size();
+        }
         return 0;
     }
 
