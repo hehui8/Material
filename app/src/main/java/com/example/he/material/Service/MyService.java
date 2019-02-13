@@ -121,6 +121,7 @@ MyService extends Service {
             mPlayer.setDataSource(url);
             //准备播放音乐
             mPlayer.prepareAsync();
+
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
@@ -288,6 +289,5 @@ MyService extends Service {
             }
         }
     }
-
 
 }

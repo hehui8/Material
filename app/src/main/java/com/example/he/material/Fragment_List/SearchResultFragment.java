@@ -72,6 +72,7 @@ public class SearchResultFragment extends Fragment {
             adapter = new SearchResultAdapter(searchresult, new SearchRecentAdapter.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
+                    songList.clear();
                     if (position >= 0) {
                         Song song = searchresult.get(position);
                         songList.add(song);

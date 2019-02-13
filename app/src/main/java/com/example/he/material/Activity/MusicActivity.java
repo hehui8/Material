@@ -6,6 +6,8 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -27,7 +29,15 @@ import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
 import com.example.he.material.Utils.AndroidWorkaround;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +74,7 @@ public class MusicActivity extends AppCompatActivity {
     private int stateFrom;
     private ImageView mRandom;
     private static int mode = 0;
+    private int lovestate=0;
 
     @SuppressLint("ResourceType")
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,8 +173,31 @@ public class MusicActivity extends AppCompatActivity {
             }
         }
 
-        if (mCircleImageView != null) {
+        /*if (mCircleImageView != null) {
             Glide.with(this).load(R.drawable.default_img).into(mCircleImageView);
+        }*/
+
+        Mp3File mp3file = null;
+        try {
+            mp3file = new Mp3File(songList.get(CurrentPosition).getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnsupportedTagException e) {
+            e.printStackTrace();
+        } catch (InvalidDataException e) {
+            e.printStackTrace();
+        }
+        if (mp3file.hasId3v2Tag()) {
+            ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+            byte[] imageData = id3v2Tag.getAlbumImage();
+            if (imageData != null) {
+                String mimeType = id3v2Tag.getAlbumImageMimeType();
+                Bitmap bitmap= BitmapFactory.decodeByteArray(imageData,0,imageData.length);
+                // Write image to file - can determine appropriate file extension from the mime type
+                if(bitmap!=null){
+                    Glide.with(MusicActivity.this).load(bitmap).into(mCircleImageView);
+                }
+            }
         }
         //动画
         initanimator();
@@ -210,6 +244,7 @@ public class MusicActivity extends AppCompatActivity {
         mnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mplay.setBackgroundResource(R.drawable.ic_pause);
                 if (stateFrom == 0) {
                     if (CurrentPosition < (songList.size() - 1)) {
                         CurrentPosition++;//如果选择下一首，那么当前播放位置加一
@@ -241,6 +276,7 @@ public class MusicActivity extends AppCompatActivity {
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mplay.setBackgroundResource(R.drawable.ic_pause);
                 if (stateFrom == 0) {
                     if (CurrentPosition < (songList.size() - 1) && CurrentPosition >= 0) {
                         CurrentPosition--;//如果选择上一首，那么当前播放位置减一
@@ -287,36 +323,19 @@ public class MusicActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        mLove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lovestate ==0) {
+                    mLove.setBackgroundResource(R.drawable.ic_love_red);
+                    lovestate = 1;
+                }else if(lovestate==1) {
+                    mLove.setBackgroundResource(R.drawable.ic_love_gray);
+                    lovestate = 0;
+                }
+            }
+        });
     }
-
-
-   /* @Override
-    protected void onResume() {
-        super.onResume();
-        Intent intent = getIntent();
-        if (intent.getBundleExtra("data") != null) {
-            Bundle mbundle = intent.getBundleExtra("data");
-            clickItem = mbundle.getInt("itemId");//点击的位置编号
-            CurrentPosition = clickItem;//当前播放位置等于点击位置
-            songList = (List<Song>) mbundle.getSerializable("music");
-            //传给service
-            mIntent.putExtra("position", clickItem);
-            mIntent.putExtra("music", (Serializable) songList);
-            startService(mIntent);
-            if (music_title != null) {
-                music_title.setText(songList.get(CurrentPosition).getSongName());
-            }
-        } else if (intent.getBundleExtra("clickResult") != null) {
-            Bundle bundle = intent.getBundleExtra("clickResult");
-            String url = bundle.getString("pathUrl");
-            if (url != null && !url.isEmpty()) {
-                music_title.setText(bundle.getString("Title"));
-                mIntent.putExtra("urlpath", url);
-                startService(mIntent);
-            }
-        }
-    }*/
 
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);

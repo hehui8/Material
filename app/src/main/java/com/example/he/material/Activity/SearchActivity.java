@@ -67,18 +67,6 @@ public class SearchActivity extends AppCompatActivity {//使用toolbar需继承A
         mListview.setAdapter(adapter);
     }
 
-    /*private void initData(){
-        list.add("看着飞舞的尘埃   掉下来");
-        list.add("没人发现它存在");
-        list.add("多自由自在");
-        list.add("可世界都爱热热闹闹");
-        list.add("容不下   我百无聊赖");
-        list.add("不应该   一个人 发呆");
-        list.add("只有我   守着安静的沙漠");
-        list.add("等待着花开");
-        list.add("只有我   看着别人的快乐");
-}
-*/
     protected void setItemClick(final List<Songs> filter_lists) {
         mListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
