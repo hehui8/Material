@@ -83,7 +83,7 @@ public class RegisterActivity extends Activity {
                 "charset=utf-8"), json);
         final Request request = new Request.Builder()
                 //.url("http://118.25.27.150:8080/Music/Servlet_1")
-                .url("http://10.1.14.15:8080/TestMusic/RegisterServlet")
+                .url("http://106.15.89.25:8080/TestMusic/RegisterServlet")
                 .post(requestBody)
                 .build();
         Call call = client.newCall(request);

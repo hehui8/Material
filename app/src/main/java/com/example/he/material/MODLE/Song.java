@@ -9,6 +9,7 @@ public class Song implements Serializable {
     private String album;
     private String path;
 	private String lrc;
+	private String picpath;
 	public Song(){
 	    super();
     }
@@ -78,5 +79,11 @@ public class Song implements Serializable {
 	}
 
 
+    public String getPicpath() {
+        return picpath;
+    }
 
+    public void setPicpath(String picpath) {
+        this.picpath = picpath;
+    }
 }

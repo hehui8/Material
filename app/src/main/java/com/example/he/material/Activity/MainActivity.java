@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 "charset=utf-8"), json);
         final Request request = new Request.Builder()
                 //.url("http://118.25.27.150:8080/Music/Servlet_1")
-                .url("http://10.1.14.15:8080/TestMusic/LogoutServlet")
+                .url("http://106.15.89.25:8080/TestMusic/LogoutServlet")
                 .post(requestBody)
                 .build();
         Call call = client_exit.newCall(request);
@@ -525,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             mTextview.setText("点击头像登陆");
                             FLAG = 0;
                             if (!mFragmentList.isEmpty()) {
-                                mFragmentList.remove(1);
+                                mFragmentList.remove(2);
                                 if (viewPager.getAdapter() != null) {
                                     viewPager.getAdapter().notifyDataSetChanged();
                                 }

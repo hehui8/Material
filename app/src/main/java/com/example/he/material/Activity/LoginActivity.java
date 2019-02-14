@@ -31,7 +31,10 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity {
     String username;
     String password;
+    private String str;
     private User user = null;
+    private Button mLogin_login;
+    private Button mLogin_register;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,8 +46,8 @@ public class LoginActivity extends AppCompatActivity {
 
         final EditText mLogin_password = findViewById(R.id.password_edit);
         final EditText mLogin_username = findViewById(R.id.username_edit);
-        Button mLogin_login = findViewById(R.id.login_button);
-        Button mLogin_register = findViewById(R.id.register_button);
+        mLogin_login = findViewById(R.id.login_button);
+        mLogin_register = findViewById(R.id.register_button);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -54,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         mLogin_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mLogin_login.setEnabled(false);
                 username = mLogin_username.getText().toString();
                 password = mLogin_password.getText().toString();
                 if (!username.isEmpty() && !password.isEmpty()) {
@@ -96,22 +100,23 @@ public class LoginActivity extends AppCompatActivity {
                 RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json);
                 Request request = new Request.Builder()
                         //服务器url
-                        .url("http://10.1.14.15:8080/TestMusic/LoginServlet")
+                        .url("http://106.15.89.25:8080/TestMusic/LoginServlet")
                         .post(requestBody)
                         .build();
                 Response response = mclient.newCall(request).execute();
                 if (response != null) {
-                    String str = response.body().string();
+                    str = response.body().string();
                     Log.d("login_success", "登陆成功 " + str);
                     if (str.equals("false")) {
                         return null;
                     }
-                    if (!str.isEmpty()) {
+                    if (!str.isEmpty() && str != null) {
                         user = gson.fromJson(str, User.class);
                         user.setUsername(users[0].getUsername());
                         user.setPassword(users[0].getPassword());
+                    } else {
+                        return null;
                     }
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -126,8 +131,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(User user) {
-            if (user != null) {
-                Toast.makeText(LoginActivity.this, "欢迎登陆  " + user.getName(), Toast.LENGTH_SHORT).show();
+            if (user != null && !user.getName().isEmpty()) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("user", user);
                 SPUtils spUtils = new SPUtils(LoginActivity.this);
@@ -135,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                 spUtils.addSP(user.getName(), user.getPassword());
                 spUtils.addSP("lastUser", user);
                 startActivity(intent);
+                Toast.makeText(LoginActivity.this, "欢迎登陆  " + user.getName(), Toast.LENGTH_SHORT).show();
                 finish();
             } else {
                 Toast.makeText(LoginActivity.this, "账号或密码错误  ", Toast.LENGTH_SHORT).show();
