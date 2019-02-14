@@ -40,9 +40,9 @@ MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(SongList!=null && !SongList.isEmpty()){
+        if (SongList != null && !SongList.isEmpty()) {
             SongList.clear();
-            if(mPlayer.isPlaying()){
+            if (mPlayer.isPlaying()) {
                 mPlayer.stop();
                 mPlayer.reset();
             }
@@ -157,7 +157,7 @@ MyService extends Service {
                         currentPosition = mPlayer.getCurrentPosition();
                         //创建消息对象
                         Message msg = MusicActivity.handler.obtainMessage();
-                        msg.what=0;
+                        msg.what = 0;
                         //将音乐的播放进度封装至消息对象中
                         Bundle bundle = new Bundle();
                         bundle.putInt("duration", duration);
@@ -189,7 +189,7 @@ MyService extends Service {
 
 
     public void next() {
-        String titleName=null;
+        String titleName = null;
         ClickPosition++;
         timer.cancel();
         try {
@@ -200,21 +200,21 @@ MyService extends Service {
             if (ClickPosition < SongList.size()) {
                 if (TYPE_PLAY_MODE == 0) {
                     mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
-                    titleName=SongList.get(ClickPosition).getSongName();
+                    titleName = SongList.get(ClickPosition).getSongName();
                 } else if (TYPE_PLAY_MODE == 1) {
                     ClickPosition--;
                     mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
-                    titleName=SongList.get(ClickPosition).getSongName();
+                    titleName = SongList.get(ClickPosition).getSongName();
                 } else if (TYPE_PLAY_MODE == 2) {
                     int index = (int) (Math.random() * SongList.size());
                     mPlayer.setDataSource(SongList.get(index).getPath());
-                    titleName=SongList.get(index).getSongName();
-                    if(index<SongList.size()){
-                        ClickPosition=index;
+                    titleName = SongList.get(index).getSongName();
+                    if (index < SongList.size()) {
+                        ClickPosition = index;
                     }
                 }
                 //准备播放音乐
-                try{
+                try {
                     mPlayer.prepareAsync();
                     mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -223,15 +223,15 @@ MyService extends Service {
                             addTimer();
                         }
                     });
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 //播放音乐
                 Message msg = MusicActivity.handler.obtainMessage();
-                msg.what=1;
-                Bundle bundle =new Bundle();
-                bundle.putString("titlename",titleName);
+                msg.what = 1;
+                Bundle bundle = new Bundle();
+                bundle.putString("titlename", titleName);
                 msg.setData(bundle);
                 MusicActivity.handler.sendMessage(msg);
             }
@@ -277,8 +277,8 @@ MyService extends Service {
         }
     }
 
-    public void setPlayMode(int mode){
-        TYPE_PLAY_MODE=mode;
+    public void setPlayMode(int mode) {
+        TYPE_PLAY_MODE = mode;
     }
 
     public void updateList(List<Song> updatelist) {
@@ -288,6 +288,17 @@ MyService extends Service {
                 SongList.addAll(updatelist);
             }
         }
+    }
+
+    public MediaPlayer getmPlayer() {
+        if (mPlayer != null) {
+            return mPlayer;
+        }
+        return null;
+    }
+
+    public int getCurrentPlay(){
+        return  currentClick;
     }
 
 }

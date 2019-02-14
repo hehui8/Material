@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
@@ -74,7 +76,15 @@ public class MusicActivity extends AppCompatActivity {
     private int stateFrom;
     private ImageView mRandom;
     private static int mode = 0;
-    private int lovestate=0;
+    private int lovestate = 0;
+
+    private MediaPlayer mediaPlayer;
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @SuppressLint("ResourceType")
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +101,7 @@ public class MusicActivity extends AppCompatActivity {
         mBack = findViewById(R.id.back);
         mplay = findViewById(R.id.play);
         mnext = findViewById(R.id.next);
-        mLove=findViewById(R.id.love);
+        mLove = findViewById(R.id.love);
         mSeekBar = findViewById(R.id.sb);
         tv_progress = findViewById(R.id.tv_progress);
         tv_total = findViewById(R.id.tv_total);
@@ -172,37 +182,22 @@ public class MusicActivity extends AppCompatActivity {
                 startService(mIntent);
             }
         }
-
-        /*if (mCircleImageView != null) {
-            Glide.with(this).load(R.drawable.default_img).into(mCircleImageView);
-        }*/
-
-        Mp3File mp3file = null;
-        try {
-            mp3file = new Mp3File(songList.get(CurrentPosition).getPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UnsupportedTagException e) {
-            e.printStackTrace();
-        } catch (InvalidDataException e) {
-            e.printStackTrace();
-        }
-        if (mp3file.hasId3v2Tag()) {
-            ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-            byte[] imageData = id3v2Tag.getAlbumImage();
-            if (imageData != null) {
-                String mimeType = id3v2Tag.getAlbumImageMimeType();
-                Bitmap bitmap= BitmapFactory.decodeByteArray(imageData,0,imageData.length);
-                // Write image to file - can determine appropriate file extension from the mime type
-                if(bitmap!=null){
-                    Glide.with(MusicActivity.this).load(bitmap).into(mCircleImageView);
+        if (mCircleImageView != null) {
+            if (songList != null && songList.size() > 0) {
+                if (songList.get(CurrentPosition).getPicpath() != null) {
+                    Glide.with(this)
+                            .load(songList.get(CurrentPosition).getPicpath())
+                            .apply(new RequestOptions().placeholder(R.drawable.default_img))
+                            .into(mCircleImageView);
                 }
             }
         }
+
         //动画
         initanimator();
         //当从主activity切换至musicactivity时，歌曲自动开始播放，动画开始
         animator.start();
+
         mplay.setBackground(getResources().getDrawable(R.drawable.ic_pause));
         //为播放键设置点击监听事件
         mplay.setOnClickListener(new View.OnClickListener() {
@@ -245,30 +240,26 @@ public class MusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mplay.setBackgroundResource(R.drawable.ic_pause);
-                if (stateFrom == 0) {
-                    if (CurrentPosition < (songList.size() - 1)) {
-                        CurrentPosition++;//如果选择下一首，那么当前播放位置加一
-                        Glide.with(MusicActivity.this)
-                                .load(R.drawable.default_img)
-                                .into(mCircleImageView);
-                        music_title.setText(songList.get(CurrentPosition).getSongName());
-                        animator.start();
-                        mService.next();
-                    } else {
-                        Toast.makeText(MusicActivity.this, "已经是最后一首了", Toast.LENGTH_SHORT).show();
-                    }
+                if (CurrentPosition < (songList.size() - 1)) {
+                    CurrentPosition++;//如果选择下一首，那么当前播放位置加一
+                    music_title.setText(songList.get(CurrentPosition).getSongName());
+                    animator.start();
+                    mService.next();
                 } else {
-                    if (CurrentPosition < (songList.size() - 1)) {
-                        CurrentPosition++;//如果选择下一首，那么当前播放位置加一
-
-                        Glide.with(MusicActivity.this)
-                                .load(R.drawable.default_img)
-                                .into(mCircleImageView);
-                        music_title.setText(songList.get(CurrentPosition).getSongName());
-                        animator.start();
-                        mService.next();
-                    } else {
-                        Toast.makeText(MusicActivity.this, "已经是最后一首了", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MusicActivity.this, "已经是最后一首了", Toast.LENGTH_SHORT).show();
+                }
+                if (mCircleImageView != null) {
+                    if (songList != null && songList.size() > 0) {
+                        if (songList.get(CurrentPosition).getPicpath() != null) {
+                            Glide.with(MusicActivity.this)
+                                    .load(songList.get(CurrentPosition).getPicpath())
+                                    .apply(new RequestOptions().placeholder(R.drawable.default_img))
+                                    .into(mCircleImageView);
+                        } else {
+                            Glide.with(MusicActivity.this)
+                                    .load(R.drawable.default_img)
+                                    .into(mCircleImageView);
+                        }
                     }
                 }
             }
@@ -277,27 +268,26 @@ public class MusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mplay.setBackgroundResource(R.drawable.ic_pause);
-                if (stateFrom == 0) {
-                    if (CurrentPosition < (songList.size() - 1) && CurrentPosition >= 0) {
-                        CurrentPosition--;//如果选择上一首，那么当前播放位置减一
-                        Glide.with(MusicActivity.this)
-                                .load(R.drawable.default_img)
-                                .into(mCircleImageView);
-                        music_title.setText(songList.get(CurrentPosition).getSongName());
-                        animator.start();
-                        mService.back();
-                    } else {
-                        Toast.makeText(MusicActivity.this, "已经是第一首了", Toast.LENGTH_SHORT).show();
-                    }
+                if (CurrentPosition < (songList.size() - 1)) {
+                    CurrentPosition--;//如果选择上一首，那么当前播放位置减一
+                    music_title.setText(songList.get(CurrentPosition).getSongName());
+                    animator.start();
+                    mService.back();
                 } else {
-                    if (CurrentPosition < (songList.size() - 1)) {
-                        CurrentPosition--;//如果选择上一首，那么当前播放位置减一
-                        Glide.with(MusicActivity.this).load(R.drawable.default_img).into(mCircleImageView);
-                        music_title.setText(songList.get(CurrentPosition).getSongName());
-                        animator.start();
-                        mService.back();
-                    } else {
-                        Toast.makeText(MusicActivity.this, "已经是第一首了", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MusicActivity.this, "已经是第一首了", Toast.LENGTH_SHORT).show();
+                }
+                if (mCircleImageView != null) {
+                    if (songList != null && songList.size() > 0) {
+                        if (songList.get(CurrentPosition).getPicpath() != null) {
+                            Glide.with(MusicActivity.this)
+                                    .load(songList.get(CurrentPosition).getPicpath())
+                                    .apply(new RequestOptions().placeholder(R.drawable.default_img))
+                                    .into(mCircleImageView);
+                        } else {
+                            Glide.with(MusicActivity.this)
+                                    .load(R.drawable.default_img)
+                                    .into(mCircleImageView);
+                        }
                     }
                 }
             }
@@ -326,10 +316,10 @@ public class MusicActivity extends AppCompatActivity {
         mLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(lovestate ==0) {
+                if (lovestate == 0) {
                     mLove.setBackgroundResource(R.drawable.ic_love_red);
                     lovestate = 1;
-                }else if(lovestate==1) {
+                } else if (lovestate == 1) {
                     mLove.setBackgroundResource(R.drawable.ic_love_gray);
                     lovestate = 0;
                 }
@@ -347,6 +337,7 @@ public class MusicActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
     }
 
     @Override
@@ -456,5 +447,32 @@ public class MusicActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("MODE", mode);
+    }
+
+    public  void  next(){
+        mplay.setBackgroundResource(R.drawable.ic_pause);
+        if (CurrentPosition < (songList.size() - 1)) {
+            CurrentPosition++;//如果选择下一首，那么当前播放位置加一
+            music_title.setText(songList.get(CurrentPosition).getSongName());
+            animator.start();
+            mService.next();
+        } else {
+            mediaPlayer.pause();
+            mediaPlayer.stop();
+        }
+        if (mCircleImageView != null) {
+            if (songList != null && songList.size() > 0) {
+                if (songList.get(CurrentPosition).getPicpath() != null) {
+                    Glide.with(MusicActivity.this)
+                            .load(songList.get(CurrentPosition).getPicpath())
+                            .apply(new RequestOptions().placeholder(R.drawable.default_img))
+                            .into(mCircleImageView);
+                } else {
+                    Glide.with(MusicActivity.this)
+                            .load(R.drawable.default_img)
+                            .into(mCircleImageView);
+                }
+            }
+        }
     }
 }
