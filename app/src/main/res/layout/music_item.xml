@@ -38,8 +38,8 @@
         android:layout_height="20dp"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="10dp"
-        android:src="@drawable/dian" />
+        android:src="@drawable/ic_more" />
 
 </RelativeLayout>

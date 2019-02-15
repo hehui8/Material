@@ -28,14 +28,6 @@
         android:textSize="15sp"
         tools:text="sdhalsjdhajsdhaks" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="15dp"
-        android:src="@drawable/dian" />
 
     <View
         android:layout_width="match_parent"
