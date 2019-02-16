@@ -1,72 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#ffffff"
     android:layout_height="match_parent">
 
-
-    <RelativeLayout
+    <com.example.he.material.UI.StickHeadScrollView
+        android:id="@+id/stick_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/layout_back"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="25dp"
-            android:paddingBottom="25dp"
-            tools:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/default_img" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="我喜欢的音乐"
-                    android:textColor="#ffffff"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginTop="15dp"
-                    android:textColor="#ffffff"
-                    android:textSize="15sp"
-                    tools:text="年纪轻轻就" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/view"
-            android:layout_alignParentBottom="true"
-            android:layout_width="match_parent"
-            android:background="#ff000000"
-            android:layout_height="1px"/>
-
-        <LinearLayout
-            android:id="@+id/layout_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/view"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:background="#666666"
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/default_img"
+                        android:layout_marginBottom="20dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                       <TextView
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_marginBottom="30dp"
+                           android:layout_marginLeft="40dp"
+                           android:text="歌单"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_head"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:textSize="20sp"
+                    android:paddingLeft="10dp"
+                    android:layout_gravity="bottom"
+                    android:drawableLeft="@drawable/ic_love_red"
+                    android:background="@drawable/love_shape"
+                    android:gravity="left|center"
+                    android:text="  喜欢的音乐"
+                    android:textColor="#000000" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_gravity="bottom"
+                    android:background="#666666"/>
+            </FrameLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/love_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
-
-
-    </RelativeLayout>
-</android.support.v4.widget.NestedScrollView>
+    </com.example.he.material.UI.StickHeadScrollView>
+</LinearLayout>

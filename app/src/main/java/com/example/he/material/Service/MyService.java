@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Bundle;
+import  android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
@@ -33,6 +34,7 @@ MyService extends Service {
     private static int ClickPosition;//当前lcoal点击的选项标号
     private int State = 0;
 
+    private MusicActivity.MyHandler myHandler;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -40,13 +42,14 @@ MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (SongList != null && !SongList.isEmpty()) {
+        if (SongList != null && SongList.size()>0) {
             SongList.clear();
             if (mPlayer.isPlaying()) {
                 mPlayer.stop();
                 mPlayer.reset();
             }
         }
+        myHandler=MusicActivity.getHandler();
         SongList = (List<Song>) intent.getSerializableExtra("music");
         ClickPosition = intent.getIntExtra("position", -1);
         //currentClick ===当前播放位置
@@ -61,6 +64,11 @@ MyService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 next();
+                Message msg = new Message();
+                msg.what = 2;
+                Bundle bundle = new Bundle();
+                bundle.putInt("click", currentClick);
+                msg.setData(bundle);
             }
         });
         return super.onStartCommand(intent, flags, startId);
@@ -156,7 +164,7 @@ MyService extends Service {
                         //获得歌曲的当前播放进度
                         currentPosition = mPlayer.getCurrentPosition();
                         //创建消息对象
-                        Message msg = MusicActivity.handler.obtainMessage();
+                        Message msg = myHandler.obtainMessage();
                         msg.what = 0;
                         //将音乐的播放进度封装至消息对象中
                         Bundle bundle = new Bundle();
@@ -164,7 +172,7 @@ MyService extends Service {
                         bundle.putInt("currentPosition", currentPosition);
                         msg.setData(bundle);
                         //将消息发送到主线程的消息队列
-                        MusicActivity.handler.sendMessage(msg);
+                        myHandler.sendMessage(msg);
                     }
                 }
             }
@@ -228,12 +236,12 @@ MyService extends Service {
                 }
 
                 //播放音乐
-                Message msg = MusicActivity.handler.obtainMessage();
+                Message msg = myHandler.obtainMessage();
                 msg.what = 1;
                 Bundle bundle = new Bundle();
                 bundle.putString("titlename", titleName);
                 msg.setData(bundle);
-                MusicActivity.handler.sendMessage(msg);
+                myHandler.sendMessage(msg);
             }
         } catch (IOException e) {
             e.printStackTrace();

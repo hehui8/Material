@@ -6,8 +6,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,27 +23,21 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
 import com.example.he.material.Utils.AndroidWorkaround;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class MusicActivity extends AppCompatActivity {
 
@@ -59,7 +52,7 @@ public class MusicActivity extends AppCompatActivity {
     private static TextView tv_progress;
     private static TextView tv_total;
     private static TextView music_title;
-    private CircleImageView mCircleImageView;
+    private static CircleImageView mCircleImageView;
     private TextView mPricture;
     private static MyService mService;
     private Intent mIntent;
@@ -70,15 +63,16 @@ public class MusicActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     //music对象属性
     private static List<Song> songListLastTime;
-    private List<Song> songList;
+    private static List<Song> songList;
     private int clickItem;
     private Toolbar mToolbar;
     private int stateFrom;
     private ImageView mRandom;
     private static int mode = 0;
     private int lovestate = 0;
-
+    private static View background;
     private MediaPlayer mediaPlayer;
+    public static MyHandler myHandler;
 
 
     @Override
@@ -97,6 +91,7 @@ public class MusicActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         music_title = findViewById(R.id.music_title);
+        background = findViewById(R.id.line1);
         mToolbar = findViewById(R.id.mytoolbar_music);
         mBack = findViewById(R.id.back);
         mplay = findViewById(R.id.play);
@@ -110,6 +105,8 @@ public class MusicActivity extends AppCompatActivity {
         mRandom = findViewById(R.id.random);
 
         //默认列表循环
+
+        myHandler=new MyHandler(this);
 
         if (savedInstanceState != null) {
             mode = savedInstanceState.getInt("MODE");
@@ -146,7 +143,6 @@ public class MusicActivity extends AppCompatActivity {
         songList = new ArrayList<>();
         mIntent = new Intent(this, MyService.class);
         //接受从fragment传送过来的bundle（点击的位置）和music集合
-
         mConn = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -165,21 +161,15 @@ public class MusicActivity extends AppCompatActivity {
             Bundle mbundle = intent.getBundleExtra("data");
             clickItem = mbundle.getInt("itemId");//点击的位置编号
             CurrentPosition = clickItem;//当前播放位置等于点击位置
+            songList.clear();
             songList = (List<Song>) mbundle.getSerializable("music");
             //传给service
             mIntent.putExtra("position", clickItem);
             mIntent.putExtra("music", (Serializable) songList);
+//            mIntent.putExtra("handler", (Serializable) myHandler);
             startService(mIntent);
             if (music_title != null) {
                 music_title.setText(songList.get(CurrentPosition).getSongName());
-            }
-        } else if (intent.getBundleExtra("clickResult") != null) {
-            Bundle bundle = intent.getBundleExtra("clickResult");
-            String url = bundle.getString("pathUrl");
-            if (url != null && !url.isEmpty()) {
-                music_title.setText(bundle.getString("Title"));
-                mIntent.putExtra("urlpath", url);
-                startService(mIntent);
             }
         }
         if (mCircleImageView != null) {
@@ -187,11 +177,23 @@ public class MusicActivity extends AppCompatActivity {
                 if (songList.get(CurrentPosition).getPicpath() != null) {
                     Glide.with(this)
                             .load(songList.get(CurrentPosition).getPicpath())
-                            .apply(new RequestOptions().placeholder(R.drawable.default_img))
+                            .apply(new RequestOptions().error(R.drawable.default_img))
                             .into(mCircleImageView);
+                    SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                            background.setBackground(resource);
+                        }
+                    };
+                    Glide.with(this)
+                            .load(songList.get(CurrentPosition).getPicpath())
+                            .apply(new RequestOptions().error(R.drawable.default_img))
+                            .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
+                            .into(simpleTarget);
                 }
             }
         }
+
 
         //动画
         initanimator();
@@ -245,54 +247,75 @@ public class MusicActivity extends AppCompatActivity {
                     music_title.setText(songList.get(CurrentPosition).getSongName());
                     animator.start();
                     mService.next();
+                    if (mCircleImageView != null) {
+                        if (songList != null && songList.size() > 0) {
+                            if (songList.get(CurrentPosition).getPicpath() != null) {
+                                Glide.with(MusicActivity.this)
+                                        .load(songList.get(CurrentPosition).getPicpath())
+                                        .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
+                                        .into(mCircleImageView);
+                                SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                        background.setBackground(resource);
+                                    }
+                                };
+                                Glide.with(MusicActivity.this)
+                                        .load(songList.get(CurrentPosition).getPicpath())
+                                        .apply(new RequestOptions().error(R.drawable.default_img))
+                                        .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
+                                        .into(simpleTarget);
+                            }
+                        }
+                    }
+
                 } else {
                     Toast.makeText(MusicActivity.this, "已经是最后一首了", Toast.LENGTH_SHORT).show();
                 }
-                if (mCircleImageView != null) {
-                    if (songList != null && songList.size() > 0) {
-                        if (songList.get(CurrentPosition).getPicpath() != null) {
-                            Glide.with(MusicActivity.this)
-                                    .load(songList.get(CurrentPosition).getPicpath())
-                                    .apply(new RequestOptions().placeholder(R.drawable.default_img))
-                                    .into(mCircleImageView);
-                        } else {
-                            Glide.with(MusicActivity.this)
-                                    .load(R.drawable.default_img)
-                                    .into(mCircleImageView);
-                        }
-                    }
-                }
+
             }
         });
-        mBack.setOnClickListener(new View.OnClickListener() {
+        mBack.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 mplay.setBackgroundResource(R.drawable.ic_pause);
-                if (CurrentPosition < (songList.size() - 1)) {
+                if (CurrentPosition <= (songList.size() - 1) && CurrentPosition > 0) {
                     CurrentPosition--;//如果选择上一首，那么当前播放位置减一
                     music_title.setText(songList.get(CurrentPosition).getSongName());
                     animator.start();
                     mService.back();
+                    if (mCircleImageView != null) {
+                        if (songList != null && songList.size() > 0) {
+                            if (songList.get(CurrentPosition).getPicpath() != null) {
+                                Glide.with(MusicActivity.this)
+                                        .load(songList.get(CurrentPosition).getPicpath())
+                                        .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
+                                        .into(mCircleImageView);
+                                SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                        background.setBackground(resource);
+                                    }
+                                };
+                                Glide.with(MusicActivity.this)
+                                        .load(songList.get(CurrentPosition).getPicpath())
+                                        .apply(new RequestOptions().error(R.drawable.default_img))
+                                        .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
+                                        .into(simpleTarget);
+                            }
+                        }
+                    }
                 } else {
                     Toast.makeText(MusicActivity.this, "已经是第一首了", Toast.LENGTH_SHORT).show();
                 }
-                if (mCircleImageView != null) {
-                    if (songList != null && songList.size() > 0) {
-                        if (songList.get(CurrentPosition).getPicpath() != null) {
-                            Glide.with(MusicActivity.this)
-                                    .load(songList.get(CurrentPosition).getPicpath())
-                                    .apply(new RequestOptions().placeholder(R.drawable.default_img))
-                                    .into(mCircleImageView);
-                        } else {
-                            Glide.with(MusicActivity.this)
-                                    .load(R.drawable.default_img)
-                                    .into(mCircleImageView);
-                        }
-                    }
-                }
+
             }
         });
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+
+        {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             }
@@ -307,19 +330,25 @@ public class MusicActivity extends AppCompatActivity {
                 mService.setProgress(mProgress);
             }
         });
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        mLove.setOnClickListener(new View.OnClickListener() {
+        mLove.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 if (lovestate == 0) {
+                    mLove.setBackground(null);
                     mLove.setBackgroundResource(R.drawable.ic_love_red);
                     lovestate = 1;
                 } else if (lovestate == 1) {
+                    mLove.setBackground(null);
                     mLove.setBackgroundResource(R.drawable.ic_love_gray);
                     lovestate = 0;
                 }
@@ -350,32 +379,72 @@ public class MusicActivity extends AppCompatActivity {
         } else if (mode == 2) {
             mRandom.setBackground(getDrawable(R.drawable.ic_random));
         }
+
     }
 
-    @SuppressLint("HandlerLeak")
-    public static Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 0:
-                    Bundle bundle = msg.getData();
-                    //歌曲的总时长(毫秒)
-                    int duration = bundle.getInt("duration");
-                    //歌曲的当前进度(毫秒)
-                    int currentPostition = bundle.getInt("currentPosition");
-                    setDuration(duration, currentPostition);
-                    break;
-                case 1:
-                    Bundle bundle1 = msg.getData();
-                    if (bundle1.getString("titlename") != null) {
-                        music_title.setText(bundle1.getString("titlename"));
-                    }
-            }
 
+    public static class  MyHandler extends Handler{
+
+        private final WeakReference<MusicActivity> mAct;
+        public MyHandler(MusicActivity musicActivity){
+            mAct=new WeakReference<MusicActivity>(musicActivity);
         }
 
-    };
+        @Override
+        public void handleMessage(Message msg) {
+            MusicActivity mainAct =mAct.get();
+            super.handleMessage(msg);
+            if(mainAct!=null){
+                switch (msg.what) {
+                    case 0:
+                        Bundle bundle = msg.getData();
+                        //歌曲的总时长(毫秒)
+                        int duration = bundle.getInt("duration");
+                        //歌曲的当前进度(毫秒)
+                        int currentPostition = bundle.getInt("currentPosition");
+                        setDuration(duration, currentPostition);
+                        break;
+                    case 1:
+                        Bundle bundle1 = msg.getData();
+                        if (bundle1.getString("titlename") != null) {
+                            music_title.setText(bundle1.getString("titlename"));
+                        }
+                        break;
+                    case 2:
+                        Bundle bundle2 = msg.getData();
+                        if(bundle2.getInt("click")>-1){
+                            int position=bundle2.getInt("click");
+                            if (mCircleImageView != null) {
+                                if (songList != null && songList.size() > 0) {
+                                    if (songList.get(position).getPicpath() != null) {
+                                        Glide.with(MusicActivity.this)
+                                                .load(songList.get(position).getPicpath())
+                                                .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
+                                                .into(mCircleImageView);
+                                        SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
+                                            @Override
+                                            public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                                if(background!=null) {
+                                                    background.setBackground(resource);
+                                                }
+                                            }
+                                        };
+                                        Glide.with(MusicActivity.this)
+                                                pad(songList.get(position).getPicpath())
+                                                .apply(new RequestOptions().error(R.drawable.default_img))
+                                                .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
+                                                .into(simpleTarget);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -449,7 +518,7 @@ public class MusicActivity extends AppCompatActivity {
         outState.putInt("MODE", mode);
     }
 
-    public  void  next(){
+    public void next() {
         mplay.setBackgroundResource(R.drawable.ic_pause);
         if (CurrentPosition < (songList.size() - 1)) {
             CurrentPosition++;//如果选择下一首，那么当前播放位置加一
@@ -460,19 +529,13 @@ public class MusicActivity extends AppCompatActivity {
             mediaPlayer.pause();
             mediaPlayer.stop();
         }
-        if (mCircleImageView != null) {
-            if (songList != null && songList.size() > 0) {
-                if (songList.get(CurrentPosition).getPicpath() != null) {
-                    Glide.with(MusicActivity.this)
-                            .load(songList.get(CurrentPosition).getPicpath())
-                            .apply(new RequestOptions().placeholder(R.drawable.default_img))
-                            .into(mCircleImageView);
-                } else {
-                    Glide.with(MusicActivity.this)
-                            .load(R.drawable.default_img)
-                            .into(mCircleImageView);
-                }
-            }
+    }
+
+
+    public static MyHandler getHandler(){
+        if(myHandler!=null){
+            return  myHandler;
         }
+        return  null;
     }
 }

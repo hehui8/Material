@@ -42,4 +42,5 @@ dependencies {
     implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:2.0.24'
     implementation 'com.mpatric:mp3agic:0.9.1'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'jp.wasabeef:glide-transformations:4.0.1'
 }

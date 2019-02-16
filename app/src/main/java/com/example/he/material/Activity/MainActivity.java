@@ -30,6 +30,7 @@ import com.example.he.material.Adapter.MyFragmentAdapter;
 import com.example.he.material.Controler.Utils;
 import com.example.he.material.Fragment_List.InternetFragment;
 import com.example.he.material.Fragment_List.LocalMusicFragment;
+import com.example.he.material.Fragment_List.LoveFragment;
 import com.example.he.material.Fragment_List.MainFragment;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.MODLE.User;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static String strRequestCloudmusic;//该变量接受api接口返回的json字符串
     private long exitTime = 0;
     private MainFragment mainFragment;
+    private LoveFragment mLoveFragment;
 
 
     @Override
@@ -146,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         s1 = LocalMusicFragment.newInstance(musicList);
         mFragmentList.add(1, s1);
+
+        mLoveFragment=mLoveFragment.newInstance();
+        mFragmentList.add(3,mLoveFragment);
 
         //实现toolbar的导航栏点击功能
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mytoolbar, R.string
@@ -289,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.txt_3:
                 selectImg(v);
                 viewPager.setCurrentItem(3, true);
+                break;
             case R.id.search:
                 if (/*FLAG == 1*/true) {
                   /*  Intent intent = new Intent(MainActivity.this, SearchActivity.class);
