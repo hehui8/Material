@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -36,6 +38,7 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -73,6 +76,7 @@ public class MusicActivity extends AppCompatActivity {
     private static View background;
     private MediaPlayer mediaPlayer;
     public static MyHandler myHandler;
+    private static Context mContext;
 
 
     @Override
@@ -85,9 +89,12 @@ public class MusicActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplay);
+
         if (AndroidWorkaround.checkDeviceHasNavigationBar(this)) {
             AndroidWorkaround.assistActivity(findViewById(android.R.id.content));
         }
+
+        mContext = getBaseContext();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         music_title = findViewById(R.id.music_title);
@@ -106,7 +113,7 @@ public class MusicActivity extends AppCompatActivity {
 
         //默认列表循环
 
-        myHandler=new MyHandler(this);
+        myHandler = new MyHandler(this);
 
         if (savedInstanceState != null) {
             mode = savedInstanceState.getInt("MODE");
@@ -383,18 +390,19 @@ public class MusicActivity extends AppCompatActivity {
     }
 
 
-    public static class  MyHandler extends Handler{
+    public static class MyHandler extends Handler {
 
         private final WeakReference<MusicActivity> mAct;
-        public MyHandler(MusicActivity musicActivity){
-            mAct=new WeakReference<MusicActivity>(musicActivity);
+
+        public MyHandler(MusicActivity musicActivity) {
+            mAct = new WeakReference<MusicActivity>(musicActivity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            MusicActivity mainAct =mAct.get();
+            MusicActivity mainAct = mAct.get();
             super.handleMessage(msg);
-            if(mainAct!=null){
+            if (mainAct != null) {
                 switch (msg.what) {
                     case 0:
                         Bundle bundle = msg.getData();
@@ -412,25 +420,25 @@ public class MusicActivity extends AppCompatActivity {
                         break;
                     case 2:
                         Bundle bundle2 = msg.getData();
-                        if(bundle2.getInt("click")>-1){
-                            int position=bundle2.getInt("click");
+                        if (bundle2.getInt("click") > -1) {
+                            int position = bundle2.getInt("click");
                             if (mCircleImageView != null) {
                                 if (songList != null && songList.size() > 0) {
                                     if (songList.get(position).getPicpath() != null) {
-                                        Glide.with(MusicActivity.this)
+                                        Glide.with(mContext)
                                                 .load(songList.get(position).getPicpath())
                                                 .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
                                                 .into(mCircleImageView);
                                         SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
                                             @Override
                                             public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                                                if(background!=null) {
+                                                if (background != null) {
                                                     background.setBackground(resource);
                                                 }
                                             }
                                         };
-                                        Glide.with(MusicActivity.this)
-                                                pad(songList.get(position).getPicpath())
+                                        Glide.with(mContext)
+                                                .load(songList.get(position).getPicpath())
                                                 .apply(new RequestOptions().error(R.drawable.default_img))
                                                 .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
                                                 .into(simpleTarget);
@@ -532,10 +540,10 @@ public class MusicActivity extends AppCompatActivity {
     }
 
 
-    public static MyHandler getHandler(){
-        if(myHandler!=null){
-            return  myHandler;
+    public static MyHandler getHandler() {
+        if (myHandler != null) {
+            return myHandler;
         }
-        return  null;
+        return null;
     }
 }

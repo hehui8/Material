@@ -64,11 +64,12 @@ MyService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 next();
-                Message msg = new Message();
+                Message msg = myHandler.obtainMessage();
                 msg.what = 2;
                 Bundle bundle = new Bundle();
-                bundle.putInt("click", currentClick);
+                bundle.putInt("click", ClickPosition);
                 msg.setData(bundle);
+                myHandler.sendMessage(msg);
             }
         });
         return super.onStartCommand(intent, flags, startId);
@@ -308,5 +309,11 @@ MyService extends Service {
     public int getCurrentPlay(){
         return  currentClick;
     }
+
+/*
+    public MusicActivity getActivity(){
+        return  MusicActivity.get
+    }
+*/
 
 }
