@@ -76,7 +76,7 @@ public class SearchResultFragment extends Fragment {
                     if (position >= 0) {
                         Song song = searchresult.get(position);
                         songList.add(song);
-                        if (!songList.isEmpty() && songList != null) {
+                        if (songList != null && !songList.isEmpty()) {
                             Intent resultIntent = new Intent(getContext(), MusicActivity.class);
                             Bundle data = new Bundle();
                             data.putInt("itemId", position);

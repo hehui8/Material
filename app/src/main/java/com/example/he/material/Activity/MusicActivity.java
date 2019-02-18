@@ -48,7 +48,7 @@ public class MusicActivity extends AppCompatActivity {
     private boolean isplaying = true;//播放标志
     public static String TAG = "MUSIC";
     private ImageView mBack;
-    private ImageView mplay;
+    private static ImageView mplay;
     private ImageView mnext;
     private ImageView mLove;
     private static SeekBar mSeekBar;
@@ -62,7 +62,7 @@ public class MusicActivity extends AppCompatActivity {
     private ServiceConnection mConn;
     private int mProgress;
     private int CurrentPosition;//当前播放位置
-    private ObjectAnimator animator;
+    private static ObjectAnimator animator;
     private ViewPager mViewPager;
     //music对象属性
     private static List<Song> songListLastTime;
@@ -179,7 +179,7 @@ public class MusicActivity extends AppCompatActivity {
                 music_title.setText(songList.get(CurrentPosition).getSongName());
             }
         }
-        if (mCircleImageView != null) {
+            if (mCircleImageView != null) {
             if (songList != null && songList.size() > 0) {
                 if (songList.get(CurrentPosition).getPicpath() != null) {
                     Glide.with(this)
@@ -446,6 +446,12 @@ public class MusicActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                        break;
+                    case 3:
+                        setDuration(0, 0);
+                        mSeekBar.setProgress(0);
+                        mplay.setBackgroundResource(R.drawable.ic_play);
+                        animator.cancel();
                         break;
                 }
             }

@@ -99,8 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
-        mainFragment = new MainFragment();
-        mFragmentList.add(0, mainFragment);
+
         mToolbar_title = this.findViewById(R.id.toolbar_title);
         tab0 = this.findViewById(R.id.txt_0);
         tab1 = this.findViewById(R.id.txt_1);
@@ -146,11 +145,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
+        mainFragment = MainFragment.newInstance(musicInternetList);
+        mFragmentList.add(0, mainFragment);
+
         s1 = LocalMusicFragment.newInstance(musicList);
-        mFragmentList.add(1, s1);
+        mFragmentList.add(1,s1);
 
         mLoveFragment=mLoveFragment.newInstance();
-        mFragmentList.add(3,mLoveFragment);
+        mFragmentList.add(mLoveFragment);
+
+
 
         //实现toolbar的导航栏点击功能
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mytoolbar, R.string

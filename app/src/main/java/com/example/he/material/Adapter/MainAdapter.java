@@ -6,9 +6,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.he.material.MODLE.Song;
+import com.example.he.material.MODLE.SongSheetList;
 import com.example.he.material.R;
 import com.example.he.material.UI.RoundImageView;
 
@@ -24,13 +29,15 @@ import java.util.List;
  */
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
 
-    private List<Song> mMusicList;
+    private List<SongSheetList> mMusicList;
     private Context mContext;
+    private MainAdapter.OnItemClickListener mOnItemClickListener;
 
-    public MainAdapter(List<Song> mMusicList, Context context) {
+    public MainAdapter(List<SongSheetList> mMusicList, Context context, OnItemClickListener l) {
         super();
         this.mMusicList = mMusicList;
         this.mContext = context;
+        this.mOnItemClickListener=l;
     }
 
     @NonNull
@@ -47,9 +54,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
     @Override
     public void onBindViewHolder(@NonNull MainHolder holder, int position) {
         if(mMusicList!=null && !mMusicList.isEmpty()){
-            Song song =mMusicList.get(position);
-            if(song!=null && !song.getSongName().isEmpty()){
-                holder.mTextView.setText(song.getSongName());
+            SongSheetList mSongSheetList =mMusicList.get(position);
+            if(mSongSheetList!=null && !mSongSheetList.getSongName().isEmpty()){
+
+                holder.mTextView.setText(mSongSheetList.getSongName());
+                holder.mRoundImg.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                RoundedCorners roundedCorners= new RoundedCorners(6);
+                //通过RequestOptions扩展功能,override:采样率,因为ImageView就这么大,可以压缩图片,降低内存消耗
+                RequestOptions options= RequestOptions.bitmapTransform(roundedCorners).override(300, 300);
+                Glide.with(mContext)
+                        .load(mSongSheetList.getPicpath())
+                        .apply(options)
+                        .into(holder.mRoundImg);
             }
         }
     }
@@ -63,7 +80,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
     }
 
     class MainHolder extends RecyclerView.ViewHolder {
-        RoundImageView mRoundImg;
+        ImageView mRoundImg;
         TextView mTextView ;
 
         public MainHolder(View itemView) {

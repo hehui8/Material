@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Bundle;
-import  android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
@@ -35,6 +34,7 @@ MyService extends Service {
     private int State = 0;
 
     private MusicActivity.MyHandler myHandler;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,14 +42,14 @@ MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (SongList != null && SongList.size()>0) {
+        if (SongList != null && SongList.size() > 0) {
             SongList.clear();
             if (mPlayer.isPlaying()) {
                 mPlayer.stop();
                 mPlayer.reset();
             }
         }
-        myHandler=MusicActivity.getHandler();
+        myHandler = MusicActivity.getHandler();
         SongList = (List<Song>) intent.getSerializableExtra("music");
         ClickPosition = intent.getIntExtra("position", -1);
         //currentClick ===当前播放位置
@@ -63,7 +63,13 @@ MyService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                next();
+                if (SongList.size() < ClickPosition + 1) {
+                    next();
+                } else {
+                    Message msg = myHandler.obtainMessage();
+                    msg.what = 3;
+                    myHandler.sendMessage(msg);
+                }
                 Message msg = myHandler.obtainMessage();
                 msg.what = 2;
                 Bundle bundle = new Bundle();
@@ -199,7 +205,10 @@ MyService extends Service {
 
     public void next() {
         String titleName = null;
-        ClickPosition++;
+        if (SongList.size() == 1) {
+        } else if (SongList.size() > 1) {
+            ClickPosition++;
+        }
         timer.cancel();
         try {
             //重置
@@ -252,7 +261,11 @@ MyService extends Service {
     }
 
     public void back() {
-        ClickPosition--;
+        if (SongList.size() == 1) {
+
+        } else if (SongList.size() > 1) {
+            ClickPosition--;
+        }
         timer.cancel();
         mPlayer.reset();
         if (ClickPosition >= 0) {
@@ -306,8 +319,8 @@ MyService extends Service {
         return null;
     }
 
-    public int getCurrentPlay(){
-        return  currentClick;
+    public int getCurrentPlay() {
+        return currentClick;
     }
 
 /*

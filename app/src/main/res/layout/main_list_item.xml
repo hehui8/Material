@@ -7,7 +7,7 @@
     android:layout_marginBottom="10dp"
     >
 
-    <com.example.he.material.UI.RoundImageView
+    <ImageView
         android:id="@+id/main_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -17,9 +17,7 @@
         android:layout_marginBottom="5dp"
         android:scaleType="fitXY"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/start_background"
-        app:radius="3dp"
-        app:type="round" />
+        android:src="@drawable/start_background" />
 
     <TextView
         android:layout_centerHorizontal="true"

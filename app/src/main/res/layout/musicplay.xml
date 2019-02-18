@@ -37,7 +37,6 @@
                 android:textSize="18sp"
                 tools:text="shdsjdhsjd" />
 
-
         </android.support.v7.widget.Toolbar>
     </LinearLayout>
 
