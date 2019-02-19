@@ -23,9 +23,6 @@
         <activity android:name=".Activity.MainActivity">
 
         </activity>
-        <activity android:name=".Activity.SearchActivity">
-
-        </activity>
         <activity android:name=".Activity.NewRecentSearchActivity">
 
         </activity>

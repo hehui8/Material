@@ -12,10 +12,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.he.material.MODLE.Song;
-import com.example.he.material.MODLE.SongSheetList;
+import com.example.he.material.MODLE.Data;
+import com.example.he.material.MODLE.JsonRootBean;
 import com.example.he.material.R;
-import com.example.he.material.UI.RoundImageView;
 
 import java.util.List;
 
@@ -29,13 +28,13 @@ import java.util.List;
  */
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
 
-    private List<SongSheetList> mMusicList;
     private Context mContext;
+    private JsonRootBean mJsonData;
     private MainAdapter.OnItemClickListener mOnItemClickListener;
 
-    public MainAdapter(List<SongSheetList> mMusicList, Context context, OnItemClickListener l) {
+    public MainAdapter(JsonRootBean mJsonData, Context context, OnItemClickListener l) {
         super();
-        this.mMusicList = mMusicList;
+        this.mJsonData=mJsonData;
         this.mContext = context;
         this.mOnItemClickListener=l;
     }
@@ -53,28 +52,26 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MainHolder holder, int position) {
-        if(mMusicList!=null && !mMusicList.isEmpty()){
-            SongSheetList mSongSheetList =mMusicList.get(position);
-            if(mSongSheetList!=null && !mSongSheetList.getSongName().isEmpty()){
+        if(mJsonData !=null ){
+                List<Data> dataList= mJsonData.getData();
 
-                holder.mTextView.setText(mSongSheetList.getSongName());
+                holder.mTextView.setText(dataList.get(position).getTitle());
                 holder.mRoundImg.setScaleType(ImageView.ScaleType.FIT_XY);
 
                 RoundedCorners roundedCorners= new RoundedCorners(6);
                 //通过RequestOptions扩展功能,override:采样率,因为ImageView就这么大,可以压缩图片,降低内存消耗
                 RequestOptions options= RequestOptions.bitmapTransform(roundedCorners).override(300, 300);
                 Glide.with(mContext)
-                        .load(mSongSheetList.getPicpath())
+                        .load(dataList.get(position).getCoverImgUrl())
                         .apply(options)
                         .into(holder.mRoundImg);
             }
         }
-    }
 
     @Override
     public int getItemCount() {
-        if(mMusicList!=null && !mMusicList.isEmpty()){
-            return mMusicList.size();
+        if(mJsonData !=null ){
+            return mJsonData.getData().size();
         }
         return 0;
     }
