@@ -1,11 +1,10 @@
 package com.example.he.material.Activity;
 
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.he.material.Fragment_List.LoveFragment;
 import com.example.he.material.MODLE.Song;
@@ -21,7 +20,7 @@ import java.util.List;
  * email : 企业邮箱
  * note : 说明
  */
-public class SongSheetActivity extends Activity {
+public class SongSheetActivity extends AppCompatActivity {
 
     private LoveFragment loveFragment;
     private List<Song> mSheetList;
@@ -30,13 +29,14 @@ public class SongSheetActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_sheet);
-        loveFragment = LoveFragment.newInstance(mSheetList);
+        loveFragment = LoveFragment.newInstance();
 
-        FragmentManager fragmentManager = getFragmentManager();
+
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager. beginTransaction();
         if(transaction!=null){
             if(loveFragment!=null){
-                transaction.add(R.id.layout_container,loveFragment);
+              transaction.add(R.id.layout_container,loveFragment);
                 transaction.commit();
             }
         }

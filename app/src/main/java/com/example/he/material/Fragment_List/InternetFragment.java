@@ -44,8 +44,8 @@ public class InternetFragment extends Fragment {
     public static Intent intent;
     private musicInternetAdapter adapter;
     private static List<Song> InternetList;
-
-
+    private  ViewGroup mInternetLayout;
+    private  ViewGroup mEmpty;
 
     public static InternetFragment newInstance(List<Song> addressList) {
         InternetFragment newFragment = new InternetFragment();
@@ -64,47 +64,53 @@ public class InternetFragment extends Fragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.internet_fragment, container, false);
         swipeRefreshLayout = view.findViewById(R.id.internet_layout);
         recyclerView = view.findViewById(R.id.recycler_view_address);
-
+        mInternetLayout=view.findViewById(R.id.internet_layout);
+        mEmpty=view.findViewById(R.id.empty);
         //配置布局管理器
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        InternetList= (List<Song>) getArguments().getSerializable("list");
+
+        InternetList = (List<Song>) getArguments().getSerializable("list");
         /**
          *    构造适配器时传入一个数据数组和一个监听接口并重写其点击事件方法
          */
+        if (InternetList != null) {
+            //设置适配器
+            swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    refresh();
 
-        //设置适配器
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh();
+                }
+            });
+            adapter = new musicInternetAdapter(InternetList, new musicInternetAdapter.OnItemClickListener() {
 
-            }
-        });
-        adapter = new musicInternetAdapter(InternetList, new musicInternetAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(int position) {
+                    Intent intent1 = new Intent(getContext(), MusicActivity.class);
+                    Bundle data = new Bundle();
+                    data.putInt("itemId", position);
+                    data.putSerializable("music", (Serializable) InternetList);
+                    intent1.putExtra("data", data);
+                    startActivity(intent1);
+                }
 
-            @Override
-            public void onClick(int position) {
-                Intent intent1 = new Intent(getContext(), MusicActivity.class);
-                Bundle data = new Bundle();
-                data.putInt("itemId", position);
-                data.putSerializable("music", (Serializable) InternetList);
-                intent1.putExtra("data", data);
-                startActivity(intent1);
-            }
+                @Override
+                public void onLongClick(int position) {
 
-            @Override
-            public void onLongClick(int position) {
-
-            }
-        });
-        recyclerView.setAdapter(adapter);
+                }
+            });
+            recyclerView.setAdapter(adapter);
+        }else{
+            mInternetLayout.setVisibility(View.GONE);
+            mEmpty.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
-    public void refresh(){
+    public void refresh() {
         OkHttpClient client = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                 .url("http://106.15.89.25:8080/TestMusic/Daily")
@@ -121,19 +127,24 @@ public class InternetFragment extends Fragment {
                     }
                 });
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String requestJson = response.body().string();
                 Gson gson = new Gson();
-                List<Song> temp=gson.fromJson(requestJson, new TypeToken<List<Song>>() {}.getType());
+                List<Song> temp = gson.fromJson(requestJson, new TypeToken<List<Song>>() {
+                }.getType());
                 InternetList.clear();
                 InternetList.addAll(temp);
-
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
+                        if(InternetList!=null) {
+                            adapter.notifyDataSetChanged();
+                            swipeRefreshLayout.setRefreshing(false);
+                            mEmpty.setVisibility(View.GONE);
+                            mInternetLayout.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
 

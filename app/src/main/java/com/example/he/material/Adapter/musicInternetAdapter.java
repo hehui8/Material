@@ -16,21 +16,22 @@ import com.example.he.material.R;
 
 import java.util.List;
 
-public class musicInternetAdapter extends RecyclerView.Adapter<musicInternetAdapter.ViewHolderInternet>{
+public class musicInternetAdapter extends RecyclerView.Adapter<musicInternetAdapter.ViewHolderInternet> {
 
-        private Context mContext;
-        private List<Song> mMusicList;
-        private OnItemClickListener mOnItemClickListener;
+    private Context mContext;
+    private List<Song> mMusicList;
+    private OnItemClickListener mOnItemClickListener;
 
 
     //viewholder创建
-    class ViewHolderInternet extends RecyclerView.ViewHolder{
+    class ViewHolderInternet extends RecyclerView.ViewHolder {
         ImageView mMusicImage;
         TextView mMusicName;
+
         public ViewHolderInternet(View view) {
             super(view);
-            mMusicImage =(ImageView)view.findViewById(R.id.address_picture_1);
-            mMusicName =(TextView)view.findViewById(R.id.address_name_1);
+            mMusicImage = (ImageView) view.findViewById(R.id.address_picture_1);
+            mMusicName = (TextView) view.findViewById(R.id.address_name_1);
 
 
         }
@@ -39,27 +40,28 @@ public class musicInternetAdapter extends RecyclerView.Adapter<musicInternetAdap
     //构造适配器时需要传入一个musiclist和 一个监听接口
     public musicInternetAdapter(List<Song> musicList, musicInternetAdapter.OnItemClickListener mOnItemClickListener) {
         this.mMusicList = musicList;
-        this.mOnItemClickListener=mOnItemClickListener;
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 
 
-        @Override
-        public ViewHolderInternet onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (mContext==null){
-                mContext=parent.getContext();
-            }
-            View view= LayoutInflater.from(mContext).inflate(R.layout.song_item,parent,false);
-            ViewHolderInternet viewHolderInternet =new ViewHolderInternet(view);
-
-            return viewHolderInternet;
+    @Override
+    public ViewHolderInternet onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (mContext == null) {
+            mContext = parent.getContext();
         }
+        View view = LayoutInflater.from(mContext).inflate(R.layout.song_item, parent, false);
+        ViewHolderInternet viewHolderInternet = new ViewHolderInternet(view);
 
-        @Override
-        public void onBindViewHolder(ViewHolderInternet holder, final int position) {
+        return viewHolderInternet;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolderInternet holder, final int position) {
+        if (mMusicList != null) {
             Song song = mMusicList.get(position);
-            holder.mMusicName.setText("  "+song.getSongName());
+            holder.mMusicName.setText("  " + song.getSongName());
             Glide.with(mContext).load(R.drawable.default_img).into(holder.mMusicImage);
-            if( mOnItemClickListener!= null) {
+            if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -74,22 +76,29 @@ public class musicInternetAdapter extends RecyclerView.Adapter<musicInternetAdap
                     }
                 });
             }
-        }
-    /*
-    * 返回点击的item的位置
-    *
-    * */
-        @Override
-        public int getItemCount() {
-            return mMusicList.size();
-        }
-
-        //声明一个ITEM点击事件接口
-        public interface OnItemClickListener{
-            void onClick(int position);
-            // 长按事件
-            void onLongClick(int position);
-        }
+        } else {
 
 
+        }
     }
+
+    /*
+     * 返回点击的item的位置
+     *
+     * */
+
+    @Override
+    public int getItemCount() {
+        return mMusicList.size();
+    }
+
+    //声明一个ITEM点击事件接口
+    public interface OnItemClickListener {
+        void onClick(int position);
+
+        // 长按事件
+        void onLongClick(int position);
+    }
+
+
+}

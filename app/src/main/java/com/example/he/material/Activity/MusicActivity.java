@@ -259,7 +259,7 @@ public class MusicActivity extends AppCompatActivity {
                             if (songList.get(CurrentPosition).getPicpath() != null) {
                                 Glide.with(MusicActivity.this)
                                         .load(songList.get(CurrentPosition).getPicpath())
-                                        .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
+                                        .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img).skipMemoryCache(true))
                                         .into(mCircleImageView);
                                 SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
                                     @Override
@@ -269,7 +269,7 @@ public class MusicActivity extends AppCompatActivity {
                                 };
                                 Glide.with(MusicActivity.this)
                                         .load(songList.get(CurrentPosition).getPicpath())
-                                        .apply(new RequestOptions().error(R.drawable.default_img))
+                                        .apply(new RequestOptions().error(R.drawable.default_img).skipMemoryCache(true))
                                         .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
                                         .into(simpleTarget);
                             }
@@ -298,7 +298,7 @@ public class MusicActivity extends AppCompatActivity {
                             if (songList.get(CurrentPosition).getPicpath() != null) {
                                 Glide.with(MusicActivity.this)
                                         .load(songList.get(CurrentPosition).getPicpath())
-                                        .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
+                                        .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img).skipMemoryCache(true))
                                         .into(mCircleImageView);
                                 SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
                                     @Override
@@ -308,7 +308,7 @@ public class MusicActivity extends AppCompatActivity {
                                 };
                                 Glide.with(MusicActivity.this)
                                         .load(songList.get(CurrentPosition).getPicpath())
-                                        .apply(new RequestOptions().error(R.drawable.default_img))
+                                        .apply(new RequestOptions().error(R.drawable.default_img).skipMemoryCache(true))
                                         .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
                                         .into(simpleTarget);
                             }
@@ -427,7 +427,7 @@ public class MusicActivity extends AppCompatActivity {
                                     if (songList.get(position).getPicpath() != null) {
                                         Glide.with(mContext)
                                                 .load(songList.get(position).getPicpath())
-                                                .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img))
+                                                .apply(new RequestOptions().placeholder(R.drawable.default_img).error(R.drawable.default_img).skipMemoryCache(true))
                                                 .into(mCircleImageView);
                                         SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
                                             @Override
@@ -439,7 +439,7 @@ public class MusicActivity extends AppCompatActivity {
                                         };
                                         Glide.with(mContext)
                                                 .load(songList.get(position).getPicpath())
-                                                .apply(new RequestOptions().error(R.drawable.default_img))
+                                                .apply(new RequestOptions().error(R.drawable.default_img).skipMemoryCache(true))
                                                 .apply(RequestOptions.bitmapTransform(new BlurTransformation(25, 3)))
                                                 .into(simpleTarget);
                                     }

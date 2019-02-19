@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.he.material.Activity.SongSheetActivity;
 import com.example.he.material.Adapter.MainAdapter;
 import com.example.he.material.MODLE.Data;
 import com.example.he.material.MODLE.JsonRootBean;
@@ -46,10 +47,9 @@ import okhttp3.Response;
  */
 public class MainFragment extends Fragment {
 
-    public static MainFragment newInstance(List<SongSheetList> list) {
+    public static MainFragment newInstance() {
         MainFragment newFragment = new MainFragment();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("list", (Serializable) list);
         newFragment.setArguments(bundle);
         return newFragment;
 
@@ -79,29 +79,31 @@ public class MainFragment extends Fragment {
         images.add(getResources().getDrawable(R.drawable.xiangjiao));
         mList = view.findViewById(R.id.main_recycler);
         banner = (Banner) view.findViewById(R.id.banner);
-
+        mSheetList = new ArrayList<>();
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        requestSongList();
-        if (mJsonData != null) {
-            mSheetList = mJsonData.getData();
-            if (mSheetList != null && mSheetList.size() > 0) {
-                mainAdapter = new MainAdapter(mSheetList, getContext(), new MainAdapter.OnItemClickListener() {
-                    @Override
-                    public void onClick(int position) {
-                        Intent intent = new Intent(getContext(), SongSheetList.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("CLICK_SONG_SHEET_POSITION", mSheetList.get(position));
-                        intent.putExtra("DATA",bundle);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onLongClick(int position) {
-                    }
-                });
+        mainAdapter = new MainAdapter(mSheetList, getContext(), new MainAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                Intent intent = new Intent(getContext(), SongSheetActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("CLICK_SONG_SHEET_POSITION", mSheetList.get(position));
+                intent.putExtra("DATA", bundle);
+                startActivity(intent);
             }
 
-        }
+            @Override
+            public void onLongClick(int position) {
+            }
+        });
+        requestSongList();
+
+//        if (mJsonData != null) {
+//            mSheetList = mJsonData.getData();
+//            if (mSheetList != null && mSheetList.size() > 0) {
+//
+//            }
+//
+//        }
 
 
         mList.setLayoutManager(layoutManager);
@@ -137,7 +139,7 @@ public class MainFragment extends Fragment {
 
     public void requestSongList() {
         Request request = new Request.Builder()
-                .url("https://api.bzqll.com/music/netease/hotSongList?key=579621905&cat=全部&limit=100&offset=0")
+                .url("https://api.bzqll.com/music/netease/hotSongList?key=579621905&cat=全部&limit=20&offset=0")
                 .get()
                 .build();
         Call call = client.newCall(request);
@@ -150,14 +152,19 @@ public class MainFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.body() != null) {
-                    String str = response.body().string();
-                    Gson gson = new Gson();
+                    final String str = response.body().string();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Gson gson = new Gson();
+                            mJsonData = gson.fromJson(str, JsonRootBean.class);
+                            List<Data> temp = mJsonData.getData();
+                            mSheetList.clear();
+                            mSheetList.addAll(temp);
+                            mainAdapter.notifyDataSetChanged();
+                        }
+                    });
 
-                    mJsonData = gson.fromJson(str, JsonRootBean.class);
-                    List<Data> temp =mJsonData.getData();
-                    mSheetList.clear();
-                    mSheetList.addAll(temp);
-                    mainAdapter.notifyDataSetChanged();
                 }
 
             }

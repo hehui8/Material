@@ -9,8 +9,6 @@
         android:id="@+id/mytoolbar_music"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#efebeb"
-        android:backgroundTint=""
         android:clipToPadding="false"
         android:fitsSystemWindows="true"
         android:gravity="center"

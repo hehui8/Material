@@ -57,7 +57,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView tab0;
     private TextView tab1;
     private TextView tab2;
@@ -117,6 +117,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mytoolbar = findViewById(R.id.mytoolbar);
         initData();
         bindView();
+
+        mainFragment = MainFragment.newInstance();
+        mFragmentList.add(0, mainFragment);
+
+        s1 = LocalMusicFragment.newInstance(musicList);
+        mFragmentList.add(1,s1);
         Intent intentFrom = getIntent();
         if (intentFrom != null) {
             FLAG = 1;
@@ -130,10 +136,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     List<Song> temp = gson.fromJson(strRequestCloudmusic, new TypeToken<List<Song>>() {
                     }.getType());
                     Log.d("hess", "onCreate: " + strRequestCloudmusic);
-                    musicInternetList.clear();
-                    musicInternetList.addAll(temp);
-                    i1 = InternetFragment.newInstance(musicInternetList);
-                    mFragmentList.add(i1);
+                    if(temp!=null){
+                        musicInternetList.clear();
+                        musicInternetList.addAll(temp);
+                        i1 = InternetFragment.newInstance(musicInternetList);
+                    }else {
+                        i1=InternetFragment.newInstance(null);
+                    }
+                    mFragmentList.add(2,i1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -146,11 +156,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-        mainFragment = MainFragment.newInstance(musicInternetList);
-        mFragmentList.add(0, mainFragment);
 
-        s1 = LocalMusicFragment.newInstance(musicList);
-        mFragmentList.add(1,s1);
 
         mLoveFragment=mLoveFragment.newInstance();
         mFragmentList.add(mLoveFragment);

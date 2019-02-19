@@ -3,7 +3,7 @@ package com.example.he.material.Fragment_List;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,9 +35,8 @@ public class LoveFragment extends Fragment {
     private MusicAdapter adapter;
     private List<Song> songList=new ArrayList<>();
 
-    public static LoveFragment newInstance(List<Song> list) {
+    public static LoveFragment newInstance() {
         Bundle args = new Bundle();
-        args.putSerializable("list", (Serializable) list);
         LoveFragment fragment = new LoveFragment();
         fragment.setArguments(args);
         return fragment;
