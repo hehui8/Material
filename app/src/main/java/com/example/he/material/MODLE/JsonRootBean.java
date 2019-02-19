@@ -1,8 +1,9 @@
 package com.example.he.material.MODLE;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class JsonRootBean {
+public class JsonRootBean implements Serializable {
 
     private String result;
     private int code;

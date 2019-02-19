@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.he.material.MODLE.Data;
-import com.example.he.material.MODLE.JsonRootBean;
 import com.example.he.material.R;
 
 import java.util.List;
@@ -29,61 +28,59 @@ import java.util.List;
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
 
     private Context mContext;
-    private JsonRootBean mJsonData;
+    private List<Data> mSheetList;
     private MainAdapter.OnItemClickListener mOnItemClickListener;
 
-    public MainAdapter(JsonRootBean mJsonData, Context context, OnItemClickListener l) {
+    public MainAdapter(List<Data> mSheetList, Context context, OnItemClickListener l) {
         super();
-        this.mJsonData=mJsonData;
+        this.mSheetList = mSheetList;
         this.mContext = context;
-        this.mOnItemClickListener=l;
+        this.mOnItemClickListener = l;
     }
 
     @NonNull
     @Override
     public MainHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(mContext==null){
-            mContext=parent.getContext();
+        if (mContext == null) {
+            mContext = parent.getContext();
         }
-        View view = LayoutInflater.from(mContext).inflate(R.layout.main_list_item,parent,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.main_list_item, parent, false);
 
-        return new  MainHolder(view);
+        return new MainHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MainHolder holder, int position) {
-        if(mJsonData !=null ){
-                List<Data> dataList= mJsonData.getData();
+        if (mSheetList != null) {
+            holder.mTextView.setText(mSheetList.get(position).getTitle());
+            holder.mRoundImg.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                holder.mTextView.setText(dataList.get(position).getTitle());
-                holder.mRoundImg.setScaleType(ImageView.ScaleType.FIT_XY);
-
-                RoundedCorners roundedCorners= new RoundedCorners(6);
-                //通过RequestOptions扩展功能,override:采样率,因为ImageView就这么大,可以压缩图片,降低内存消耗
-                RequestOptions options= RequestOptions.bitmapTransform(roundedCorners).override(300, 300);
-                Glide.with(mContext)
-                        .load(dataList.get(position).getCoverImgUrl())
-                        .apply(options)
-                        .into(holder.mRoundImg);
-            }
+            RoundedCorners roundedCorners = new RoundedCorners(6);
+            //通过RequestOptions扩展功能,override:采样率,因为ImageView就这么大,可以压缩图片,降低内存消耗
+            RequestOptions options = RequestOptions.bitmapTransform(roundedCorners).override(300, 300);
+            Glide.with(mContext)
+                    .load(mSheetList.get(position).getCoverImgUrl())
+                    .apply(options)
+                    .into(holder.mRoundImg);
         }
+    }
 
     @Override
     public int getItemCount() {
-        if(mJsonData !=null ){
-            return mJsonData.getData().size();
+        if (mSheetList != null) {
+            return mSheetList.size();
         }
         return 0;
     }
 
     class MainHolder extends RecyclerView.ViewHolder {
         ImageView mRoundImg;
-        TextView mTextView ;
+        TextView mTextView;
 
         public MainHolder(View itemView) {
             super(itemView);
             mRoundImg = itemView.findViewById(R.id.main_image);
-            mTextView=itemView.findViewById(R.id.main_text);
+            mTextView = itemView.findViewById(R.id.main_text);
         }
     }
 

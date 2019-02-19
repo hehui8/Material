@@ -15,13 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.he.material.Adapter.MainAdapter;
+import com.example.he.material.MODLE.Data;
 import com.example.he.material.MODLE.JsonRootBean;
-import com.example.he.material.MODLE.Song;
 import com.example.he.material.MODLE.SongSheetList;
 import com.example.he.material.R;
 import com.example.he.material.Utils.GlideImageLoader;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.youth.banner.Banner;
 import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
@@ -59,8 +58,7 @@ public class MainFragment extends Fragment {
     private Banner banner;
     private RecyclerView mList;
     private MainAdapter mainAdapter;
-    private SongSheetList mSheetList;
-    private List<JsonRootBean> mSongSheetList;
+    private List<Data> mSheetList;
     private OkHttpClient client;
     private JsonRootBean mJsonData;
 
@@ -74,38 +72,38 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        client=new OkHttpClient.Builder().build();
-        List<Drawable> images =new ArrayList<>();
+        client = new OkHttpClient.Builder().build();
+        List<Drawable> images = new ArrayList<>();
         images.add(getResources().getDrawable(R.drawable.caomei));
         images.add(getResources().getDrawable(R.drawable.chengzi));
         images.add(getResources().getDrawable(R.drawable.xiangjiao));
-        mList=view.findViewById(R.id.main_recycler);
+        mList = view.findViewById(R.id.main_recycler);
         banner = (Banner) view.findViewById(R.id.banner);
-        if(getArguments()!=null){
-            mSongSheetList= (List<JsonRootBean>) getArguments().getSerializable("list");
-        }
-        List<Song> songs=new ArrayList<>();
-        for(int i=0;i<30;i++){
-            Song song =new Song();
-            song.setSongName("zs1111");
-            songs.add(song);
-        }
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
-        if(mSongSheetList!=null && mSongSheetList.size()>0){
-            mainAdapter=new MainAdapter(mSongSheetList, getContext(), new MainAdapter.OnItemClickListener() {
-                @Override
-                public void onClick(int position) {
-                    Intent intent =new Intent();
-                    Bundle bundle =new Bundle();
-                    bundle.putSerializable("ClickForSheet",(Serializable) mSongSheetList.get(position));
-                }
 
-                @Override
-                public void onLongClick(int position) {
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        requestSongList();
+        if (mJsonData != null) {
+            mSheetList = mJsonData.getData();
+            if (mSheetList != null && mSheetList.size() > 0) {
+                mainAdapter = new MainAdapter(mSheetList, getContext(), new MainAdapter.OnItemClickListener() {
+                    @Override
+                    public void onClick(int position) {
+                        Intent intent = new Intent(getContext(), SongSheetList.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("CLICK_SONG_SHEET_POSITION", mSheetList.get(position));
+                        intent.putExtra("DATA",bundle);
+                        startActivity(intent);
+                    }
 
-                }
-            });
+                    @Override
+                    public void onLongClick(int position) {
+                    }
+                });
+            }
+
         }
+
+
         mList.setLayoutManager(layoutManager);
         mList.setAdapter(mainAdapter);
         //设置图片加载器
@@ -117,14 +115,11 @@ public class MainFragment extends Fragment {
         banner.setOnBannerListener(new OnBannerListener() {
             @Override
             public void OnBannerClick(int position) {
-                Toast.makeText(getContext(),"第"+position+"个",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "第" + position + "个", Toast.LENGTH_SHORT).show();
             }
         });
         //banner设置方法全部调用完毕时最后调用
         banner.start();
-
-
-
 
 
     }
@@ -140,12 +135,12 @@ public class MainFragment extends Fragment {
         banner.stopAutoPlay();
     }
 
-    public void requestSongList(){
-        Request request =new Request.Builder()
+    public void requestSongList() {
+        Request request = new Request.Builder()
                 .url("https://api.bzqll.com/music/netease/hotSongList?key=579621905&cat=全部&limit=100&offset=0")
                 .get()
                 .build();
-        Call call=client.newCall(request);
+        Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -155,9 +150,14 @@ public class MainFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.body() != null) {
-                    String str =response.body().string();
-                    Gson gson =new Gson();
-                    mJsonData=gson.toJson(str,new TypeToken<JsonRootBean>(){}.getT);
+                    String str = response.body().string();
+                    Gson gson = new Gson();
+
+                    mJsonData = gson.fromJson(str, JsonRootBean.class);
+                    List<Data> temp =mJsonData.getData();
+                    mSheetList.clear();
+                    mSheetList.addAll(temp);
+                    mainAdapter.notifyDataSetChanged();
                 }
 
             }

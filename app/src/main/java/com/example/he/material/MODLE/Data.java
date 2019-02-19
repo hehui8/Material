@@ -1,5 +1,7 @@
 package com.example.he.material.MODLE;
 
+import java.io.Serializable;
+
 /**
  * project: Material
  * author : Android研发部_姓名
@@ -8,7 +10,7 @@ package com.example.he.material.MODLE;
  * email : 企业邮箱
  * note : 说明
  */
-public class Data {
+public class Data  implements Serializable {
 
     private long id;
     private String title;
