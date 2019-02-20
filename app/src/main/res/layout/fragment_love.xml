@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="#ffffff"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
 
     <com.example.he.material.UI.StickHeadScrollView
         android:id="@+id/stick_scrollview"
@@ -15,60 +17,83 @@
             android:orientation="vertical">
 
             <FrameLayout
-                android:background="#666666"
+
                 android:layout_width="match_parent"
                 android:layout_height="250dp">
 
-                <LinearLayout
+                <ImageView
+                    android:id="@+id/img_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#666666"
+                    android:scaleType="fitXY" />
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:paddingLeft="30dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
 
-                    <TextView
+                    <ImageView
+                        android:id="@+id/img_avatar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/default_img"
-                        android:layout_marginBottom="20dp"/>
+                        android:layout_marginBottom="50dp"
+                        android:background="@drawable/default_img" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="40dp"
+                        android:layout_toRightOf="@+id/img_avatar"
                         android:orientation="vertical">
-                       <TextView
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:layout_marginBottom="30dp"
-                           android:layout_marginLeft="40dp"
-                           android:text="歌单"/>
+                        <TextView
+                            android:id="@+id/tv_song_sheet_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="#ffffff"
+                            android:textSize="18sp"
+                            tools:text="22222" />
                     </LinearLayout>
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/tv_head"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:textSize="20sp"
-                    android:paddingLeft="10dp"
                     android:layout_gravity="bottom"
-                    android:drawableLeft="@drawable/ic_love_red"
                     android:background="@drawable/love_shape"
+                    android:drawableLeft="@drawable/ic_love_red"
                     android:gravity="left|center"
+                    android:paddingLeft="10dp"
                     android:text="  喜欢的音乐"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1px"
                     android:layout_gravity="bottom"
-                    android:background="#666666"/>
+                    android:background="#666666" />
             </FrameLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/love_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
         </LinearLayout>
     </com.example.he.material.UI.StickHeadScrollView>
+
+    <include
+        android:id="@+id/empty"
+        layout="@layout/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </LinearLayout>

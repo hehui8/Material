@@ -50,10 +50,16 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MainHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MainHolder holder, final int position) {
         if (mSheetList != null) {
             holder.mTextView.setText(mSheetList.get(position).getTitle());
             holder.mRoundImg.setScaleType(ImageView.ScaleType.FIT_XY);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mOnItemClickListener.onClick(position);
+                }
+            });
 
             RoundedCorners roundedCorners = new RoundedCorners(6);
             //通过RequestOptions扩展功能,override:采样率,因为ImageView就这么大,可以压缩图片,降低内存消耗

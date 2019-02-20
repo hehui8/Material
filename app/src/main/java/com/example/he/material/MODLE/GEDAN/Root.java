@@ -1,28 +1,28 @@
 package com.example.he.material.MODLE.GEDAN;
 
 public class Root {
-    private int ResultCode;
+    private String result;
 
-    private String ErrCode;
+    private String code;
 
-    private Body Body;
+    private Data data;
 
-    public void setResultCode(int ResultCode){
-        this.ResultCode = ResultCode;
+    public void setResult(String result){
+        this.result = result;
     }
-    public int getResultCode(){
-        return this.ResultCode;
+    public String getResult(){
+        return this.result;
     }
-    public void setErrCode(String ErrCode){
-        this.ErrCode = ErrCode;
+    public void setCode(String ErrCode){
+        this.code = ErrCode;
     }
-    public String getErrCode(){
-        return this.ErrCode;
+    public String getCode(){
+        return this.code;
     }
-    public void setBody(Body Body){
-        this.Body = Body;
+    public void setData(Data Data){
+        this.data = Data;
     }
-    public Body getBody(){
-        return this.Body;
+    public Data getData(){
+        return this.data;
     }
 }

@@ -20,7 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.MainActivity"
+            android:windowSoftInputMode="adjustNothing"
+            >
 
         </activity>
         <activity android:name=".Activity.NewRecentSearchActivity">
@@ -32,6 +34,7 @@
         <activity android:name=".Activity.LoginActivity">
 
         </activity>
+        <activity android:name=".Activity.SongSheetActivity" />
         <activity android:name=".Activity.RegisterActivity"></activity>
 
         <service android:name="com.example.he.material.Service.MyService"></service>

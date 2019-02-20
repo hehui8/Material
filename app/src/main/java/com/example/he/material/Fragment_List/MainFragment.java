@@ -18,7 +18,6 @@ import com.example.he.material.Activity.SongSheetActivity;
 import com.example.he.material.Adapter.MainAdapter;
 import com.example.he.material.MODLE.Data;
 import com.example.he.material.MODLE.JsonRootBean;
-import com.example.he.material.MODLE.SongSheetList;
 import com.example.he.material.R;
 import com.example.he.material.Utils.GlideImageLoader;
 import com.google.gson.Gson;
@@ -27,7 +26,6 @@ import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +59,7 @@ public class MainFragment extends Fragment {
     private List<Data> mSheetList;
     private OkHttpClient client;
     private JsonRootBean mJsonData;
+    private  List<Data> temp;
 
     @Nullable
     @Override
@@ -153,15 +152,17 @@ public class MainFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.body() != null) {
                     final String str = response.body().string();
+                    Gson gson = new Gson();
+                    mJsonData = gson.fromJson(str, JsonRootBean.class);
+                    temp = mJsonData.getData();
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Gson gson = new Gson();
-                            mJsonData = gson.fromJson(str, JsonRootBean.class);
-                            List<Data> temp = mJsonData.getData();
-                            mSheetList.clear();
-                            mSheetList.addAll(temp);
-                            mainAdapter.notifyDataSetChanged();
+                            if (temp != null && mSheetList != null) {
+                                mSheetList.clear();
+                                mSheetList.addAll(temp);
+                                mainAdapter.notifyDataSetChanged();
+                            }
                         }
                     });
 

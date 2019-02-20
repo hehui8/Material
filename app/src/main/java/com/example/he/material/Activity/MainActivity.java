@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initData();
         bindView();
 
+
+        viewPager.setOffscreenPageLimit(4);
         mainFragment = MainFragment.newInstance();
         mFragmentList.add(0, mainFragment);
 

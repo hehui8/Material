@@ -1,15 +1,13 @@
-package com.example.he.material.Activity;
+package com.example.he.material.Fragment_List;
 
-
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,13 +16,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.he.material.Activity.SongSheetActivity;
 import com.example.he.material.Adapter.SongSheetAdapter;
-import com.example.he.material.Fragment_List.LoveFragment;
-import com.example.he.material.Fragment_List.SongSheetFragment;
-import com.example.he.material.MODLE.Data;
+import com.example.he.material.MODLE.GEDAN.Data;
 import com.example.he.material.MODLE.GEDAN.Root;
 import com.example.he.material.MODLE.GEDAN.songs;
-import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.UI.StickHeadScrollView;
 import com.google.gson.Gson;
@@ -44,17 +40,13 @@ import okhttp3.Response;
 /**
  * project: Material
  * author : Android研发部_姓名
- * date : 2019/2/18
- * time : 19:23
+ * date : 2019/2/20
+ * time : 15:47
  * email : 企业邮箱
  * note : 说明
  */
-public class SongSheetActivity extends AppCompatActivity {
+public class SongSheetFragment extends Fragment {
 
-    private SongSheetFragment songSheetFragment;
-    private List<Data> mSheetList;
-    private SongSheetAdapter mAdapter;
-    private Data mDataFromMy;
     private StickHeadScrollView mStickHeadScrollView;
     private RecyclerView recyclerView;
     private SongSheetAdapter adapter;
@@ -64,39 +56,46 @@ public class SongSheetActivity extends AppCompatActivity {
     private Root mRoot;
     private ImageView viewImg;
     private ViewGroup mEmpty;
-    private ViewGroup mProgress;
     private SongSheetActivity mActivity;
     private TextView mSheetNameTv;
     private ImageView mAvatarImg;
 
+    public static SongSheetFragment newInstance(com.example.he.material.MODLE.Data data) {
+
+        Bundle args = new Bundle();
+        args.putSerializable("data", (Serializable) data);
+        SongSheetFragment fragment = new SongSheetFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_love, container, false);
+    }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_song_sheet);
-        Intent intent=getIntent();
-        if(intent!=null){
-            Bundle bundle =intent.getBundleExtra("DATA");
-            if(bundle!=null){
-                mData= (Data) bundle.getSerializable("CLICK_SONG_SHEET_POSITION");
-            }
-        }
-
-        mActivity = this;
-        mSheetNameTv=findViewById(R.id.tv_song_sheet_name);
-        mAvatarImg=findViewById(R.id.img_avatar);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mActivity = new SongSheetActivity().getActivity();
+        mSheetNameTv=view.findViewById(R.id.tv_song_sheet_name);
+        mAvatarImg=view.findViewById(R.id.img_avatar);
         client = new OkHttpClient.Builder().build();
-        viewImg = findViewById(R.id.img_bg);
-        View headView = findViewById(R.id.tv_head);
-        recyclerView = findViewById(R.id.love_list);
-        mEmpty = findViewById(R.id.empty);
-        mProgress=findViewById(R.id.progress);
-        mStickHeadScrollView = findViewById(R.id.stick_scrollview);
+        viewImg = view.findViewById(R.id.img_bg);
+        View headView = view.findViewById(R.id.tv_head);
+        recyclerView = view.findViewById(R.id.love_list);
+        mEmpty = view.findViewById(R.id.empty);
+        mStickHeadScrollView = view.findViewById(R.id.stick_scrollview);
 
         //避免自动滑动到底部
         headView.setFocusable(true);
         headView.setFocusableInTouchMode(true);
         headView.requestFocus();
+
+        mData = (com.example.he.material.MODLE.Data) getArguments().getSerializable("data");
         adapter = new SongSheetAdapter(songList, new SongSheetAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
@@ -108,24 +107,13 @@ public class SongSheetActivity extends AppCompatActivity {
 
             }
         });
-
         requestSongList();
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(adapter);
-        mStickHeadScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-
-            }
-        });
         mStickHeadScrollView.resetHeight(headView, recyclerView);
-
-    }
-
-    public SongSheetActivity getActivity(){
-        return this;
     }
 
     public void requestSongList() {
@@ -143,7 +131,7 @@ public class SongSheetActivity extends AppCompatActivity {
                     public void run() {
                         mEmpty.setVisibility(View.VISIBLE);
                         mStickHeadScrollView.setVisibility(View.GONE);
-                        Toast.makeText(SongSheetActivity.this, "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -157,18 +145,21 @@ public class SongSheetActivity extends AppCompatActivity {
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            com.example.he.material.MODLE.GEDAN.Data mTempData = mRoot.getData();
+                            Data mTempData = mRoot.getData();
                             if (mTempData != null && mTempData.getSongs() != null) {
                                 List<songs> temp = mTempData.getSongs();
                                 if (temp != null ) {
+                                    mEmpty.setVisibility(View.GONE);
+                                    mStickHeadScrollView.setVisibility(View.VISIBLE);
                                     mSheetNameTv.setText(mTempData.getSongListName());
                                     songList.clear();
                                     songList.addAll(temp);
-                                    Glide.with(mActivity)
+
+                                    Glide.with(SongSheetFragment.this)
                                             .load(mTempData.getSongListPic())
                                             .apply(new RequestOptions().error(R.drawable.default_img).bitmapTransform(new BlurTransformation(14, 15)))
                                             .into(viewImg);
-                                    Glide.with(mActivity)
+                                    Glide.with(SongSheetFragment.this)
                                             .load(mTempData.getSongListPic())
                                             .apply(new RequestOptions().error(R.drawable.default_img))
                                             .into(mAvatarImg);

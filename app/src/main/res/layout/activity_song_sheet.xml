@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/mytoolbar_music"
+        android:id="@+id/my_toolbar_music"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#09ffffff"
         android:clipToPadding="false"
         android:fitsSystemWindows="true"
         android:gravity="center"
@@ -26,10 +28,104 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <LinearLayout
-        android:id="@+id/layout_container"
+    <com.example.he.material.UI.StickHeadScrollView
+        android:id="@+id/stick_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal" />
+        android:visibility="visible">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <FrameLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+                <ImageView
+                    android:id="@+id/img_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#666666"
+                    android:scaleType="fitXY" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingLeft="15dp">
+
+                    <ImageView
+                        android:id="@+id/img_avatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="50dp"
+                        android:background="@drawable/default_img" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="40dp"
+                        android:layout_toRightOf="@+id/img_avatar"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_song_sheet_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="#ffffff"
+                            android:textSize="18sp"
+                            tools:text="22222" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tv_head"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/love_shape"
+                    android:drawableLeft="@drawable/ic_love_red"
+                    android:gravity="left|center"
+                    android:paddingLeft="10dp"
+                    android:text="  喜欢的音乐"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_gravity="bottom"
+                    android:background="#666666" />
+            </FrameLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/love_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </com.example.he.material.UI.StickHeadScrollView>
+
+    <include
+        android:id="@+id/empty"
+        layout="@layout/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/progress"
+        layout="@layout/layout_empty_reload"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 </LinearLayout>

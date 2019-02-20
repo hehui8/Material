@@ -39,7 +39,7 @@ public class OKHTTP {
                 try{
 
                     client =new OkHttpClient.Builder().build();
-                    String json="{\"TransCode\":\"020111\",\"OpenId\":\"Test\",\"Body\":{\"SongListId\":\"2429050789\"}}";
+                    String json="{\"TransCode\":\"020111\",\"OpenId\":\"Test\",\"Data\":{\"SongListId\":\"2429050789\"}}";
                     RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"),json);
                     Request request = new Request.Builder()
                             //.url("http://118.25.27.150:8080/Music/Servlet_1")
