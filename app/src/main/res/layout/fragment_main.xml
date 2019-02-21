@@ -106,7 +106,7 @@
             android:contentDescription="@null" />
 
 
-        <android.support.v7.widget.RecyclerView
+        <com.jcodecraeer.xrecyclerview.XRecyclerView
             android:id="@+id/main_recycler"
             android:nestedScrollingEnabled="false"
             android:layout_width="match_parent"

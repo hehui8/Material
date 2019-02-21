@@ -2,16 +2,12 @@ package com.example.he.material.MODLE.GEDAN;
 
 import java.io.Serializable;
 
-public class Songs implements Serializable {
+public class songs implements Serializable {
     private int id;
 
-    private String title;
+    private String name;
 
-    private String author;
-
-    private int author_id;
-
-    private String author_pic;
+    private String singer;
 
     private String pic;
 
@@ -19,61 +15,64 @@ public class Songs implements Serializable {
 
     private String lrc;
 
-    private int time;
+    public int getId() {
+        return id;
+    }
 
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
-    public int getId(){
-        return this.id;
+
+    public String getName() {
+        return name;
     }
-    public void setTitle(String title){
-        this.title = title;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public String getTitle(){
-        return this.title;
+
+    public String getSinger() {
+        return singer;
     }
-    public void setAuthor(String author){
-        this.author = author;
+
+    public void setSinger(String singer) {
+        this.singer = singer;
     }
-    public String getAuthor(){
-        return this.author;
+
+    public String getPic() {
+        return pic;
     }
-    public void setAuthor_id(int author_id){
-        this.author_id = author_id;
-    }
-    public int getAuthor_id(){
-        return this.author_id;
-    }
-    public void setAuthor_pic(String author_pic){
-        this.author_pic = author_pic;
-    }
-    public String getAuthor_pic(){
-        return this.author_pic;
-    }
-    public void setPic(String pic){
+
+    public void setPic(String pic) {
         this.pic = pic;
     }
-    public String getPic(){
-        return this.pic;
+
+    public String getUrl() {
+        return url;
     }
-    public void setUrl(String url){
+
+    public void setUrl(String url) {
         this.url = url;
     }
-    public String getUrl(){
-        return this.url;
+
+    public String getLrc() {
+        return lrc;
     }
-    public void setLrc(String lrc){
+
+    public void setLrc(String lrc) {
         this.lrc = lrc;
     }
-    public String getLrc(){
-        return this.lrc;
+
+    public int getTime() {
+        return time;
     }
-    public void setTime(int time){
+
+    public void setTime(int time) {
         this.time = time;
     }
-    public int getTime(){
-        return this.time;
-    }
+
+    private int time;
+
+
 
 }

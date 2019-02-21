@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar_music"
+        android:id="@+id/my_toolbar_sheet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#09ffffff"
+        android:layout_height="45dp"
+        android:background="#00000000"
         android:clipToPadding="false"
-        android:fitsSystemWindows="true"
         android:gravity="center"
-        app:navigationIcon="@mipmap/back">
+        app:navigationIcon="@drawable/ic_back">
 
         <TextView
             android:id="@+id/sheet_title"
@@ -23,15 +22,16 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="#000000"
             android:textSize="18sp" />
 
     </android.support.v7.widget.Toolbar>
+
 
     <com.example.he.material.UI.StickHeadScrollView
         android:id="@+id/stick_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/my_toolbar_sheet"
         android:visibility="visible">
 
         <LinearLayout
@@ -39,11 +39,9 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
             <FrameLayout
-
                 android:layout_width="match_parent"
-                android:layout_height="250dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/img_bg"
@@ -53,58 +51,49 @@
                     android:scaleType="fitXY" />
 
                 <RelativeLayout
+                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
+                    android:layout_marginBottom="30dp"
                     android:paddingLeft="15dp">
 
                     <ImageView
                         android:id="@+id/img_avatar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="50dp"
+                        android:layout_marginBottom="30dp"
                         android:background="@drawable/default_img" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tv_song_sheet_name"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="30dp"
                         android:layout_marginRight="40dp"
                         android:layout_toRightOf="@+id/img_avatar"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_song_sheet_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:textColor="#ffffff"
-                            android:textSize="18sp"
-                            tools:text="22222" />
-                    </LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp"
+                        tools:text="22222" />
 
                 </RelativeLayout>
-
                 <TextView
                     android:id="@+id/tv_head"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:background="@drawable/love_shape"
-                    android:drawableLeft="@drawable/ic_love_red"
+                    android:drawableLeft="@drawable/ic_sheet_love"
                     android:gravity="left|center"
                     android:paddingLeft="10dp"
                     android:text="  喜欢的音乐"
                     android:textColor="#000000"
                     android:textSize="20sp" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:layout_gravity="bottom"
-                    android:background="#666666" />
             </FrameLayout>
 
             <android.support.v7.widget.RecyclerView
@@ -127,5 +116,5 @@
         layout="@layout/layout_empty_reload"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible" />
-</LinearLayout>
+        android:visibility="gone" />
+</RelativeLayout>

@@ -21,6 +21,7 @@ import com.example.he.material.MODLE.JsonRootBean;
 import com.example.he.material.R;
 import com.example.he.material.Utils.GlideImageLoader;
 import com.google.gson.Gson;
+import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.youth.banner.Banner;
 import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
@@ -54,6 +55,7 @@ public class MainFragment extends Fragment {
     }
 
     private Banner banner;
+    private XRecyclerView mXRlist;
     private RecyclerView mList;
     private MainAdapter mainAdapter;
     private List<Data> mSheetList;
@@ -105,8 +107,19 @@ public class MainFragment extends Fragment {
 //        }
 
 
-        mList.setLayoutManager(layoutManager);
-        mList.setAdapter(mainAdapter);
+        mXRlist.setLayoutManager(layoutManager);
+        mXRlist.setAdapter(mainAdapter);
+        mXRlist.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+
+            }
+
+            @Override
+            public void onLoadMore() {
+
+            }
+        });
         //设置图片加载器
         banner.setImageLoader(new GlideImageLoader());
         //设置图片集合
