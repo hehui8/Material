@@ -18,9 +18,11 @@ import com.example.he.material.Activity.SongSheetActivity;
 import com.example.he.material.Adapter.MainAdapter;
 import com.example.he.material.MODLE.Data;
 import com.example.he.material.MODLE.JsonRootBean;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Utils.GlideImageLoader;
 import com.google.gson.Gson;
+import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.youth.banner.Banner;
 import com.youth.banner.Transformer;
@@ -46,6 +48,8 @@ import okhttp3.Response;
  */
 public class MainFragment extends Fragment {
 
+
+
     public static MainFragment newInstance() {
         MainFragment newFragment = new MainFragment();
         Bundle bundle = new Bundle();
@@ -58,10 +62,12 @@ public class MainFragment extends Fragment {
     private XRecyclerView mXRlist;
     private RecyclerView mList;
     private MainAdapter mainAdapter;
+    private ArrayList<Data> mTempList;
     private List<Data> mSheetList;
     private OkHttpClient client;
     private JsonRootBean mJsonData;
     private  List<Data> temp;
+    private int index=10;
 
     @Nullable
     @Override
@@ -78,9 +84,11 @@ public class MainFragment extends Fragment {
         images.add(getResources().getDrawable(R.drawable.caomei));
         images.add(getResources().getDrawable(R.drawable.chengzi));
         images.add(getResources().getDrawable(R.drawable.xiangjiao));
-        mList = view.findViewById(R.id.main_recycler);
+        mXRlist = view.findViewById(R.id.main_recycler);
+
         banner = (Banner) view.findViewById(R.id.banner);
         mSheetList = new ArrayList<>();
+        mTempList=new ArrayList<>();
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         mainAdapter = new MainAdapter(mSheetList, getContext(), new MainAdapter.OnItemClickListener() {
             @Override
@@ -106,18 +114,25 @@ public class MainFragment extends Fragment {
 //
 //        }
 
-
         mXRlist.setLayoutManager(layoutManager);
+        mXRlist.setLoadingMoreEnabled(true);
+        mXRlist.setLoadingMoreProgressStyle(ProgressStyle.Pacman);
         mXRlist.setAdapter(mainAdapter);
         mXRlist.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-
             }
-
             @Override
             public void onLoadMore() {
-
+                if(index+10<mTempList.size()){
+                    for(int i=index;i<index+10;i++){
+                        mSheetList.add(mTempList.get(i));
+                    }
+                    index=index+10;
+                    mainAdapter.notifyDataSetChanged();
+                }else{
+                    Toast.makeText(getContext(),"已经到底了",Toast.LENGTH_LONG).show();
+                }
             }
         });
         //设置图片加载器
@@ -151,7 +166,7 @@ public class MainFragment extends Fragment {
 
     public void requestSongList() {
         Request request = new Request.Builder()
-                .url("https://api.bzqll.com/music/netease/hotSongList?key=579621905&cat=全部&limit=20&offset=0")
+                .url("https://api.bzqll.com/music/netease/hotSongList?key=579621905&cat=全部&limit=100&offset=0")
                 .get()
                 .build();
         Call call = client.newCall(request);
@@ -171,9 +186,13 @@ public class MainFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (temp != null && mSheetList != null) {
+                            if (temp != null && mTempList != null) {
+                                mTempList.clear();
                                 mSheetList.clear();
-                                mSheetList.addAll(temp);
+                                mTempList.addAll(temp);
+                                for(int i=0;i<index+10;i++){
+                                    mSheetList.add(mTempList.get(i));
+                                }
                                 mainAdapter.notifyDataSetChanged();
                             }
                         }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,10 +17,14 @@ import com.example.he.material.Adapter.MusicAdapter;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.UI.StickHeadScrollView;
+import com.example.he.material.Utils.SPUtils;
+import com.google.gson.Gson;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * project: Material
@@ -34,6 +39,8 @@ public class LoveFragment extends Fragment {
     private RecyclerView recyclerView;
     private MusicAdapter adapter;
     private List<Song> songList=new ArrayList<>();
+    private SPUtils spUtils;
+    private SwipeRefreshLayout mRefresh;
 
     public static LoveFragment newInstance() {
         Bundle args = new Bundle();
@@ -61,10 +68,52 @@ public class LoveFragment extends Fragment {
         headView.setFocusableInTouchMode(true);
         headView.requestFocus();
         //2.set height
-        for(int i=0;i<20;i++){
-            Song song =new Song();
-            song.setSongName("11"+i);
-            songList.add(song);
+        mRefresh=view.findViewById(R.id.layout_fresh);
+
+        spUtils=new SPUtils(getContext());
+        Gson gson=new Gson();
+        mRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Map<String,?> map=spUtils.getLoveListSP("LOVE");
+                if(map!=null) {
+                    songList.clear();
+                    Iterator iter = map.entrySet().iterator();
+                    while (iter.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iter.next();
+                        String key = (String) entry.getKey();
+                        String val = (String) entry.getValue();
+                        Song song = new Gson().fromJson(val, Song.class);
+                        if (song != null)
+                            songList.add(song);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                mRefresh.setRefreshing(false);
+
+            }
+        });
+
+        Map<String,?> map=spUtils.getLoveListSP("LOVE");
+        if(map!=null){
+            Iterator iter = map.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                String key = (String) entry.getKey();
+                String val = (String) entry.getValue();
+                Song song =gson.fromJson(val,Song.class);
+                if(song!=null)
+                songList.add(song);
+            }
+        }
+        if(songList!=null){
+           if( songList.size()==0){
+               for(int i=0;i<20;i++){
+                   Song song =new Song();
+                   song.setSongName("11"+i);
+                   songList.add(song);
+               }
+           }
         }
 
 

@@ -2,9 +2,12 @@ package com.example.he.material.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.example.he.material.MODLE.User;
 import com.google.gson.Gson;
+
+import java.util.Map;
 
 public class SPUtils {
     private Context mContext;
@@ -53,4 +56,50 @@ public class SPUtils {
         return null;
     }
 
+    public void addLoveSongSP(String key, String values) {
+        setSP("LOVE");
+        if (sp != null) {
+            editor = sp.edit();
+            if (editor != null) {
+                editor.putString(key, values);
+                editor.apply();
+            }
+        }
+    }
+
+    public boolean getSingleLoveSong(String key) {
+        setSP("LOVE");
+        if (sp != null) {
+           String str= sp.getString(key,null);
+            if(!TextUtils.isEmpty(str)){
+                return  true;
+            }else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public Map<String, ?> getLoveListSP(String key) {
+        setSP("LOVE");
+        Map<String, ?> map;
+        if (sp != null) {
+            map = sp.getAll();
+            if (map != null) {
+                return map;
+            }
+        }
+        return null;
+    }
+
+    public void removeLoveListSP(String key) {
+        setSP("LOVE");
+        if (sp != null) {
+            editor = sp.edit();
+            if (editor != null) {
+                editor.remove(key);
+                editor.apply();
+            }
+        }
+    }
 }

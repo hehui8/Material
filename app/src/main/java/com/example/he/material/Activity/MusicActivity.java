@@ -16,6 +16,7 @@ import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -33,6 +34,8 @@ import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.Service.MyService;
 import com.example.he.material.Utils.AndroidWorkaround;
+import com.example.he.material.Utils.SPUtils;
+import com.google.gson.Gson;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -76,7 +79,10 @@ public class MusicActivity extends AppCompatActivity {
     private static View background;
     private MediaPlayer mediaPlayer;
     public static MyHandler myHandler;
+
+    private static int playPosition;
     private static Context mContext;
+    private SPUtils spUtils;
 
 
     @Override
@@ -345,18 +351,32 @@ public class MusicActivity extends AppCompatActivity {
                 finish();
             }
         });
-        mLove.setOnClickListener(new View.OnClickListener()
-
-        {
+        final SPUtils spUtils =new SPUtils(MusicActivity.this);
+        boolean isLove=spUtils.getSingleLoveSong(String.valueOf(songList.get(CurrentPosition).getId()));
+        if(isLove){
+            lovestate=1;
+            mLove.setBackgroundResource(R.drawable.ic_love_red);
+        }else{
+            lovestate=0;
+            mLove.setBackgroundResource(R.drawable.ic_love_gray);
+        }
+        mLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Gson gson =new Gson();
+                String strMusic= gson.toJson(songList.get(playPosition));
                 if (lovestate == 0) {
-                    mLove.setBackground(null);
                     mLove.setBackgroundResource(R.drawable.ic_love_red);
+                    if(playPosition>=0){
+                        if(!TextUtils.isEmpty(strMusic)){
+                            spUtils.addLoveSongSP(songList.get(playPosition).getId()+"",strMusic);
+                        }
+                    }
                     lovestate = 1;
                 } else if (lovestate == 1) {
                     mLove.setBackground(null);
                     mLove.setBackgroundResource(R.drawable.ic_love_gray);
+                    spUtils.removeLoveListSP(songList.get(playPosition).getId()+"");
                     lovestate = 0;
                 }
             }
@@ -422,6 +442,7 @@ public class MusicActivity extends AppCompatActivity {
                         Bundle bundle2 = msg.getData();
                         if (bundle2.getInt("click") > -1) {
                             int position = bundle2.getInt("click");
+                            playPosition=position;
                             if (mCircleImageView != null) {
                                 if (songList != null && songList.size() > 0) {
                                     if (songList.get(position).getPicpath() != null) {
