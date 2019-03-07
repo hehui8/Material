@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.example.he.material.Activity.SongSheetActivity;
@@ -49,7 +52,6 @@ import okhttp3.Response;
 public class MainFragment extends Fragment {
 
 
-
     public static MainFragment newInstance() {
         MainFragment newFragment = new MainFragment();
         Bundle bundle = new Bundle();
@@ -58,16 +60,17 @@ public class MainFragment extends Fragment {
 
     }
 
-    private Banner banner;
     private XRecyclerView mXRlist;
-    private RecyclerView mList;
+    private Banner banner;
     private MainAdapter mainAdapter;
     private ArrayList<Data> mTempList;
     private List<Data> mSheetList;
     private OkHttpClient client;
     private JsonRootBean mJsonData;
-    private  List<Data> temp;
-    private int index=10;
+    private NestedScrollView scrollView;
+    private List<Data> temp;
+    private int index = 10;
+
 
     @Nullable
     @Override
@@ -86,10 +89,10 @@ public class MainFragment extends Fragment {
         images.add(getResources().getDrawable(R.drawable.xiangjiao));
         mXRlist = view.findViewById(R.id.main_recycler);
 
-        banner = (Banner) view.findViewById(R.id.banner);
+
+
         mSheetList = new ArrayList<>();
-        mTempList=new ArrayList<>();
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        mTempList = new ArrayList<>();
         mainAdapter = new MainAdapter(mSheetList, getContext(), new MainAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
@@ -104,38 +107,11 @@ public class MainFragment extends Fragment {
             public void onLongClick(int position) {
             }
         });
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+
         requestSongList();
-
-//        if (mJsonData != null) {
-//            mSheetList = mJsonData.getData();
-//            if (mSheetList != null && mSheetList.size() > 0) {
-//
-//            }
-//
-//        }
-
-        mXRlist.setLayoutManager(layoutManager);
-        mXRlist.setLoadingMoreEnabled(true);
-        mXRlist.setLoadingMoreProgressStyle(ProgressStyle.Pacman);
-        mXRlist.setAdapter(mainAdapter);
-        mXRlist.setLoadingListener(new XRecyclerView.LoadingListener() {
-            @Override
-            public void onRefresh() {
-            }
-            @Override
-            public void onLoadMore() {
-                if(index+10<mTempList.size()){
-                    for(int i=index;i<index+10;i++){
-                        mSheetList.add(mTempList.get(i));
-                    }
-                    index=index+10;
-                    mainAdapter.notifyDataSetChanged();
-                }else{
-                    Toast.makeText(getContext(),"已经到底了",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        //设置图片加载器
+        View header =  LayoutInflater.from(getContext()).inflate(R.layout.item_main_head, null,false);
+        banner=header.findViewById(R.id.banner);
         banner.setImageLoader(new GlideImageLoader());
         //设置图片集合
         banner.setImages(images);
@@ -149,19 +125,36 @@ public class MainFragment extends Fragment {
         });
         //banner设置方法全部调用完毕时最后调用
         banner.start();
+        mXRlist.addHeaderView(header);
+        mXRlist.setAdapter(mainAdapter);
+        mXRlist.setLayoutManager(layoutManager);
+        mXRlist.setLoadingMoreProgressStyle(ProgressStyle.Pacman);
+        mXRlist.setHasFixedSize(true);
+        mXRlist.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
 
+            }
 
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+            @Override
+            public void onLoadMore() {
+                if (index + 10 < mTempList.size()) {
+                    for (int i = index; i < index + 10; i++) {
+                        mSheetList.add(mTempList.get(i));
+                    }
+                    index = index + 10;
+                    mainAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "已经到底了", Toast.LENGTH_LONG).show();
+                }
+                mXRlist.loadMoreComplete();
+            }
+        });
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        banner.stopAutoPlay();
     }
 
     public void requestSongList() {
@@ -190,7 +183,7 @@ public class MainFragment extends Fragment {
                                 mTempList.clear();
                                 mSheetList.clear();
                                 mTempList.addAll(temp);
-                                for(int i=0;i<index+10;i++){
+                                for (int i = 0; i < index + 10; i++) {
                                     mSheetList.add(mTempList.get(i));
                                 }
                                 mainAdapter.notifyDataSetChanged();
