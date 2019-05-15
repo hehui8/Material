@@ -363,6 +363,7 @@ public class MusicActivity extends AppCompatActivity {
         mLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playPosition = clickItem;
                 Gson gson =new Gson();
                 String strMusic= gson.toJson(songList.get(playPosition));
                 if (lovestate == 0) {
@@ -469,6 +470,12 @@ public class MusicActivity extends AppCompatActivity {
                         }
                         break;
                     case 3:
+                        setDuration(0, 0);
+                        mSeekBar.setProgress(0);
+                        mplay.setBackgroundResource(R.drawable.ic_play);
+                        animator.cancel();
+                        break;
+                    case 4:
                         setDuration(0, 0);
                         mSeekBar.setProgress(0);
                         mplay.setBackgroundResource(R.drawable.ic_play);

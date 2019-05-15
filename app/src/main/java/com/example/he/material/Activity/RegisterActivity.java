@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.he.material.MODLE.User;
@@ -34,6 +35,7 @@ public class RegisterActivity extends Activity {
     private EditText mUserEd;
     private EditText mNameEd;
     private EditText mPassEd;
+    private TextView mCancle;
     private Button mRegister;
 
     @Override
@@ -44,6 +46,7 @@ public class RegisterActivity extends Activity {
         mUserEd = findViewById(R.id.ed_username);
         mNameEd = findViewById(R.id.ed_name);
         mRegister = findViewById(R.id.register_button);
+        mCancle = findViewById(R.id.cancel_action);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -58,6 +61,15 @@ public class RegisterActivity extends Activity {
                     if (!username.isEmpty() && !password.isEmpty() && !name.isEmpty()) {
                         registerRequest(username, password, name);
                     }
+                }
+            }
+        });
+
+        mCancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mCancle != null ){
+                    finish();
                 }
             }
         });

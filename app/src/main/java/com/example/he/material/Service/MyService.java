@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.he.material.Activity.MusicActivity;
 import com.example.he.material.MODLE.Song;
@@ -32,6 +33,7 @@ MyService extends Service {
     private List<Song> SongList;
     private static int ClickPosition;//当前lcoal点击的选项标号
     private int State = 0;
+    private boolean isPlay = true;
 
     private MusicActivity.MyHandler myHandler;
 
@@ -54,11 +56,7 @@ MyService extends Service {
         ClickPosition = intent.getIntExtra("position", -1);
         //currentClick ===当前播放位置
         if (SongList != null && !SongList.isEmpty()) {
-            if ((currentClick == -1) || (currentClick != ClickPosition)) {
-                currentClick = ClickPosition;
-                State = 0;
-                initplay(SongList.get(currentClick).getPath());
-            }
+                initplay(SongList.get(ClickPosition).getPath());
         }
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -115,6 +113,9 @@ MyService extends Service {
 
             if (mPlayer != null && mPlayer.isPlaying()) {
                 mPlayer.pause();
+                mPlayer.stop();
+                mPlayer.release();
+                mPlayer = null;
                 currentClick = -1;
             }
         }
@@ -126,6 +127,7 @@ MyService extends Service {
      *
      * */
     public void initplay(String url) {
+        isPlay =false;
         try {
             if (mPlayer == null) {
                 mPlayer = new MediaPlayer();
@@ -144,10 +146,23 @@ MyService extends Service {
                     mPlayer.start();
                     //添加计时器
                     addTimer();
+                    isPlay = true;
+                }
+            });
+            mPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    Toast.makeText(getBaseContext(),"网络出错了，请稍后再试",Toast.LENGTH_SHORT).show();
+                    Message msg = myHandler.obtainMessage();
+                    msg.what = 4;
+                    myHandler.sendMessage(msg);
+                    return  false;
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
+            isPlay = true;
+
         }
     }
 
@@ -185,10 +200,10 @@ MyService extends Service {
             }
         }, 0, 500);
         //开始计时任务后的5毫秒，第一次执行run方法，以后每500毫秒执行一次
-
     }
 
     public void play() {
+        isPlay = true;
         if (!mPlayer.isPlaying()) {
             mPlayer.start();
         }
@@ -196,6 +211,7 @@ MyService extends Service {
 
     public void pause() {
         mPlayer.pause();
+        isPlay = false;
     }
 
     public void setProgress(int progress) {
@@ -204,63 +220,65 @@ MyService extends Service {
 
 
     public void next() {
+        isPlay = true;
         String titleName = null;
         if (SongList.size() == 1) {
         } else if (SongList.size() > 1) {
             ClickPosition++;
         }
-        timer.cancel();
-        try {
-            //重置
-            mPlayer.reset();
-            //加载多媒体文件
+        if(timer !=null) {
+            timer.cancel();
+            try {
+                //重置
+                mPlayer.reset();
+                //加载多媒体文件
 
-            if (ClickPosition < SongList.size()) {
-                if (TYPE_PLAY_MODE == 0) {
-                    mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
-                    titleName = SongList.get(ClickPosition).getSongName();
-                } else if (TYPE_PLAY_MODE == 1) {
-                    ClickPosition--;
-                    mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
-                    titleName = SongList.get(ClickPosition).getSongName();
-                } else if (TYPE_PLAY_MODE == 2) {
-                    int index = (int) (Math.random() * SongList.size());
-                    mPlayer.setDataSource(SongList.get(index).getPath());
-                    titleName = SongList.get(index).getSongName();
-                    if (index < SongList.size()) {
-                        ClickPosition = index;
-                    }
-                }
-                //准备播放音乐
-                try {
-                    mPlayer.prepareAsync();
-                    mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
-                            mPlayer.start();
-                            addTimer();
+                if (ClickPosition < SongList.size()) {
+                    if (TYPE_PLAY_MODE == 0) {
+                        mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
+                        titleName = SongList.get(ClickPosition).getSongName();
+                    } else if (TYPE_PLAY_MODE == 1) {
+                        ClickPosition--;
+                        mPlayer.setDataSource(SongList.get(ClickPosition).getPath());
+                        titleName = SongList.get(ClickPosition).getSongName();
+                    } else if (TYPE_PLAY_MODE == 2) {
+                        int index = (int) (Math.random() * SongList.size());
+                        mPlayer.setDataSource(SongList.get(index).getPath());
+                        titleName = SongList.get(index).getSongName();
+                        if (index < SongList.size()) {
+                            ClickPosition = index;
                         }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    }
+                    //准备播放音乐
+                    try {
+                        mPlayer.prepareAsync();
+                        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mediaPlayer) {
+                                mPlayer.start();
+                                addTimer();
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //播放音乐
+                    Message msg = myHandler.obtainMessage();
+                    msg.what = 1;
+                    Bundle bundle = new Bundle();
+                    bundle.putString("titlename", titleName);
+                    msg.setData(bundle);
+                    myHandler.sendMessage(msg);
                 }
-
-                //播放音乐
-                Message msg = myHandler.obtainMessage();
-                msg.what = 1;
-                Bundle bundle = new Bundle();
-                bundle.putString("titlename", titleName);
-                msg.setData(bundle);
-                myHandler.sendMessage(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-
     }
 
     public void back() {
+        isPlay = true;
         if (SongList.size() == 1) {
 
         } else if (SongList.size() > 1) {
@@ -322,11 +340,5 @@ MyService extends Service {
     public int getCurrentPlay() {
         return currentClick;
     }
-
-/*
-    public MusicActivity getActivity(){
-        return  MusicActivity.get
-    }
-*/
 
 }

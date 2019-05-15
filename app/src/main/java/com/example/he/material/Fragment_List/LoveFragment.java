@@ -1,5 +1,6 @@
 package com.example.he.material.Fragment_List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.he.material.Activity.MusicActivity;
 import com.example.he.material.Adapter.MusicAdapter;
 import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
@@ -106,22 +108,17 @@ public class LoveFragment extends Fragment {
                 songList.add(song);
             }
         }
-        if(songList!=null){
-           if( songList.size()==0){
-               for(int i=0;i<20;i++){
-                   Song song =new Song();
-                   song.setSongName("11"+i);
-                   songList.add(song);
-               }
-           }
-        }
-
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         adapter=new MusicAdapter(songList, new MusicAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                Toast.makeText(getContext(), "SHOW + "+position, Toast.LENGTH_SHORT).show();
+                Intent intent1 = new Intent(getContext(), MusicActivity.class);
+                Bundle data = new Bundle();
+                data.putInt("itemId", position);
+                data.putSerializable("music", (Serializable) songList);
+                intent1.putExtra("data", data);
+                startActivity(intent1);
             }
 
             @Override

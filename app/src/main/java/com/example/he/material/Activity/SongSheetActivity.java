@@ -24,11 +24,13 @@ import com.example.he.material.Adapter.SongSheetAdapter;
 import com.example.he.material.MODLE.Data;
 import com.example.he.material.MODLE.GEDAN.Root;
 import com.example.he.material.MODLE.GEDAN.songs;
+import com.example.he.material.MODLE.Song;
 import com.example.he.material.R;
 import com.example.he.material.UI.StickHeadScrollView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +58,7 @@ public class SongSheetActivity extends AppCompatActivity {
     private OkHttpClient client;
     private com.example.he.material.MODLE.Data mData;
     private List<songs> songList = new ArrayList<>();
+    private List<Song> SongList = new ArrayList<>();
     private Root mRoot;
     private ImageView viewImg;
     private ViewGroup mEmpty;
@@ -97,12 +100,23 @@ public class SongSheetActivity extends AppCompatActivity {
         adapter = new SongSheetAdapter(songList, new SongSheetAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-
+                Intent intent1 = new Intent(SongSheetActivity.this, MusicActivity.class);
+                Bundle data = new Bundle();
+                data.putInt("itemId", position);
+                data.putSerializable("music", (Serializable) SongList);
+                intent1.putExtra("data", data);
+                startActivity(intent1);
             }
 
             @Override
             public void onLongClick(int position) {
 
+            }
+        });
+        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 
@@ -175,36 +189,62 @@ public class SongSheetActivity extends AppCompatActivity {
                     final String str = response.body().string();
                     Gson gson = new Gson();
                     mRoot = gson.fromJson(str, Root.class);
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            com.example.he.material.MODLE.GEDAN.Data mTempData = mRoot.getData();
-                            if (mTempData != null && mTempData.getSongs() != null) {
-                                List<songs> temp = mTempData.getSongs();
-                                if (temp != null) {
-                                    mSheetNameTv.setText(mTempData.getSongListName());
-                                    songList.clear();
-                                    songList.addAll(temp);
-                                    Glide.with(mActivity)
-                                            .load(mTempData.getSongListPic())
-                                            .apply(new RequestOptions().error(R.drawable.default_img).bitmapTransform(new BlurTransformation(14, 15)))
-                                            .into(viewImg);
-                                    Glide.with(mActivity)
-                                            .load(mTempData.getSongListPic())
-                                            .apply(new RequestOptions().error(R.drawable.default_img))
-                                            .into(mAvatarImg);
-                                    adapter.notifyDataSetChanged();
+                    if (mRoot != null) {
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                com.example.he.material.MODLE.GEDAN.Data mTempData = mRoot.getData();
+                                if (mTempData != null && mTempData.getSongs() != null) {
+                                    List<songs> temp = mTempData.getSongs();
+                                    if (temp != null) {
+                                        mSheetNameTv.setText(mTempData.getSongListName());
+                                        songList.clear();
+                                        songList.addAll(temp);
+                                        Glide.with(mActivity)
+                                                .load(mTempData.getSongListPic())
+                                                .apply(new RequestOptions().error(R.drawable.default_img).bitmapTransform(new BlurTransformation(14, 15)))
+                                                .into(viewImg);
+                                        Glide.with(mActivity)
+                                                .load(mTempData.getSongListPic())
+                                                .apply(new RequestOptions().error(R.drawable.default_img))
+                                                .into(mAvatarImg);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                } else {
+                                    mEmpty.setVisibility(View.VISIBLE);
+                                    mStickHeadScrollView.setVisibility(View.GONE);
                                 }
-                            } else {
-                                mEmpty.setVisibility(View.VISIBLE);
-                                mStickHeadScrollView.setVisibility(View.GONE);
+                            }catch (Exception e){
+                                    e.printStackTrace();
+                                }
                             }
+                        });
+                        com.example.he.material.MODLE.GEDAN.Data data = mRoot.getData();
+                        if(data !=null ){
+                            if(SongList != null){
+                                SongList.clear();
+                            }else{
+                                SongList = new ArrayList<>();
+                            }
+                           List<songs> songsList = data.getSongs();
+                           if(songsList !=null && !songsList.isEmpty()){
+                               for(songs songs1 : songsList){
+                                   Song song = new Song();
+                                   song.setAlbum(null);
+                                   song.setArtist(songs1.getSinger());
+                                   song.setId(songs1.getId());
+                                   song.setLrc(songs1.getLrc());
+                                   song.setPicpath(songs1.getPic());
+                                   song.setSongName(songs1.getName());
+                                   song.setPath(songs1.getUrl());
+                                   SongList.add(song);
+                               }
+                           }
 
                         }
-                    });
-
+                    }
                 }
-
             }
         });
 
